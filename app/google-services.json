@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "357266855035",
+    "project_id": "agromanager-15c9f",
+    "storage_bucket": "agromanager-15c9f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:357266855035:android:c353100cb7f532ccd43ede",
+        "android_client_info": {
+          "package_name": "com.example.appagromanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBu0hgbpsbKw2byWFcbU--W6Ow_XQ2GSg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
