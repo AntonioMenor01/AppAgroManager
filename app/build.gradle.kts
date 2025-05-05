@@ -50,4 +50,5 @@ dependencies {
     val nav_version = "2.8.2"
     implementation("androidx.navigation:navigation-fragment:$nav_version")
     implementation("androidx.navigation:navigation-ui:$nav_version")
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
 }
