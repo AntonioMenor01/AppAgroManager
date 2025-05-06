@@ -62,7 +62,6 @@ public class RegisterFragment extends Fragment {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            // Guardar en Supabase
                             sendUserDataToSupabase(name, surname, email);
                         }
                     } else {
@@ -109,7 +108,7 @@ public class RegisterFragment extends Fragment {
                     errorBody = "Error leyendo el cuerpo: " + e.getMessage();
                 }
 
-                String finalErrorBody = errorBody; // Variable final para usar en la UI thread
+                String finalErrorBody = errorBody;
                 requireActivity().runOnUiThread(() -> {
                     if (response.isSuccessful()) {
                         Toast.makeText(getContext(), "Usuario registrado correctamente", Toast.LENGTH_SHORT).show();

@@ -11,7 +11,6 @@
         android:padding="24dp"
         android:gravity="center_horizontal">
 
-        <!-- Título -->
         <TextView
             android:id="@+id/registerTitle"
             android:layout_width="wrap_content"
@@ -21,7 +20,6 @@
             android:textStyle="bold"
             android:layout_marginBottom="24dp" />
 
-        <!-- Campo para el Nombre -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -35,7 +33,6 @@
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Campo para Apellidos -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,7 +47,6 @@
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Campo de Correo Electrónico -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,7 +61,6 @@
                 android:inputType="textEmailAddress"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Campo de Contraseña -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,7 +75,6 @@
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Botón de Registrarse -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/registerButton"
             android:layout_width="match_parent"
@@ -89,7 +83,6 @@
             android:layout_marginTop="24dp"
             style="@style/Widget.MaterialComponents.Button" />
 
-        <!-- Texto de navegación a Iniciar Sesión -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

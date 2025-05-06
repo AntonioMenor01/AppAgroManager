@@ -33,6 +33,12 @@ public class LoginFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
 
+        if (mAuth.getCurrentUser () != null) {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+            return;
+        }
+
         binding.registerButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(this)
                     .navigate(R.id.action_login_to_sign_in);

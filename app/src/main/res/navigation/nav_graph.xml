@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.appagromanager.HomeFragment"
+        android:label="Inicio"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_animalesFragment"
+            app:destination="@id/animalesFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_piensoFragment"
+            app:destination="@id/piensoFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_insumosFragment"
+            app:destination="@id/insumosFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_fincasFragment"
+            app:destination="@id/fincasFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/animalesFragment"
+        android:name="com.example.appagromanager.AnimalesFragment"
+        android:label="Gestion de animales"
+        tools:layout="@layout/fragment_animales" >
+        <action
+            android:id="@+id/action_animalesFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_animalesFragment_to_insumosFragment"
+            app:destination="@id/insumosFragment" />
+        <action
+            android:id="@+id/action_animalesFragment_to_piensoFragment"
+            app:destination="@id/piensoFragment" />
+        <action
+            android:id="@+id/action_animalesFragment_to_fincasFragment"
+            app:destination="@id/fincasFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/piensoFragment"
+        android:name="com.example.appagromanager.PiensoFragment"
+        android:label="Stock del Pienso"
+        tools:layout="@layout/fragment_pienso" >
+        <action
+            android:id="@+id/action_piensoFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_piensoFragment_to_animalesFragment"
+            app:destination="@id/animalesFragment" />
+        <action
+            android:id="@+id/action_piensoFragment_to_insumosFragment"
+            app:destination="@id/insumosFragment" />
+        <action
+            android:id="@+id/action_piensoFragment_to_fincasFragment"
+            app:destination="@id/fincasFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/insumosFragment"
+        android:name="com.example.appagromanager.InsumosFragment"
+        android:label="Insumos"
+        tools:layout="@layout/fragment_insumos" >
+        <action
+            android:id="@+id/action_insumosFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_insumosFragment_to_fincasFragment"
+            app:destination="@id/fincasFragment" />
+        <action
+            android:id="@+id/action_insumosFragment_to_animalesFragment"
+            app:destination="@id/animalesFragment" />
+        <action
+            android:id="@+id/action_insumosFragment_to_piensoFragment"
+            app:destination="@id/piensoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/fincasFragment"
+        android:name="com.example.appagromanager.FincasFragment"
+        android:label="Fincas"
+        tools:layout="@layout/fragment_fincas" >
+        <action
+            android:id="@+id/action_fincasFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_fincasFragment_to_piensoFragment"
+            app:destination="@id/piensoFragment" />
+        <action
+            android:id="@+id/action_fincasFragment_to_animalesFragment"
+            app:destination="@id/animalesFragment" />
+        <action
+            android:id="@+id/action_fincasFragment_to_insumosFragment"
+            app:destination="@id/insumosFragment" />
+    </fragment>
+
+        <fragment
+            android:id="@+id/cerrarSesion"
+            android:name="com.example.appagromanager.CerrarSesion"
+            android:label="Cerrar sesión"
+            tools:layout="@layout/fragment_cerrar_sesion" >
+            <action
+                android:id="@+id/action_cerrarSesion_to_cambiarPasswd"
+                app:destination="@id/cambiarPasswd" />
+        </fragment>
+        <fragment
+            android:id="@+id/cambiarPasswd"
+            android:name="com.example.appagromanager.CambiarPasswd"
+            android:label="Cambiar contraseña"
+            tools:layout="@layout/fragment_cambiar_passwd" >
+            <action
+                android:id="@+id/action_cambiarPasswd_to_cerrarSesion"
+                app:destination="@id/cerrarSesion" />
+        </fragment>
+        <fragment
+            android:id="@+id/detallesUser"
+            android:name="com.example.appagromanager.DetallesUser"
+            android:label="Detalles del usuario"
+            tools:layout="@layout/fragment_detalles_user" >
+            <action
+                android:id="@+id/action_detallesUser_to_cerrarSesion"
+                app:destination="@id/cerrarSesion" />
+            <action
+                android:id="@+id/action_detallesUser_to_cambiarPasswd"
+                app:destination="@id/cambiarPasswd" />
+        </fragment>
+
+
+</navigation>
