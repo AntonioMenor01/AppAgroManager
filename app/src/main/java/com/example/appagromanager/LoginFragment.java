@@ -59,7 +59,6 @@ public class LoginFragment extends Fragment {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(requireActivity(), task -> {
                         binding.loginButton.setEnabled(true);
-                        binding.loginButton.setText("Iniciar Sesión");
 
                         if (task.isSuccessful()) {
                             Intent intent = new Intent(requireActivity(), MainActivity.class);
