@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/detallesUser"
-            android:title="Detalles del usuario:" />
+            android:title="Detalles del usuario" />
 
         <item
             android:id="@+id/cambiarPasswd"

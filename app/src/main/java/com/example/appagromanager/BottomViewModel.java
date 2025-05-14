@@ -15,10 +15,8 @@ public class BottomViewModel extends ViewModel {
     private final AgroRepository agroRepository = new AgroRepository();
     private final MutableLiveData<List<Animal>> animales = new MutableLiveData<>();
     private final MutableLiveData<List<Finca>> fincas = new MutableLiveData<>();
-
-    public BottomViewModel() {
-        obtenerAnimalesPorGrupo("");
-    }
+    private final MutableLiveData<Boolean> eliminado = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> actualizado = new MutableLiveData<>();
 
     public LiveData<List<Animal>> getAnimales() {
         return animales;
@@ -34,5 +32,19 @@ public class BottomViewModel extends ViewModel {
         if (fincas.getValue() == null || fincas.getValue().isEmpty()) {
             agroRepository.getFinca().observeForever(fincas::postValue);
         }
+    }
+
+    public LiveData<Boolean> getEliminado() {
+        return eliminado;
+    }
+    public void eliminarAnimal(String crotal) {
+        agroRepository.deleteAnimal(crotal).observeForever(eliminado::postValue);
+    }
+
+    public LiveData<Boolean> getActualizado() {
+        return actualizado;
+    }
+    public void actualizarAnimal(String crotal, Animal animalActualizado) {
+        agroRepository.updateAnimal(crotal, animalActualizado).observeForever(actualizado::postValue);
     }
 }

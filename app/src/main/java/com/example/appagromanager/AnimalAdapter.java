@@ -10,8 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appagromanager.models.Animal;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder> {
@@ -58,7 +62,9 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     @Override
     public void onBindViewHolder(@NonNull AnimalViewHolder holder, int position) {
         Animal animal = animalesFiltrados.get(position);
-        holder.bind(animal, listener);
+        String fechaFormateada = formatearFecha(animal.getFechaNacimiento());
+        holder.bind(animal, fechaFormateada, listener);
+
     }
 
     @Override
@@ -66,21 +72,35 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
         return animalesFiltrados.size();
     }
 
+    private String formatearFecha(String fechaOriginal) {
+        SimpleDateFormat formatoEntrada = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat formatoSalida = new SimpleDateFormat("dd-MM-yyyy", new Locale("es", "ES"));
+        try {
+            Date fecha = formatoEntrada.parse(fechaOriginal);
+            return formatoSalida.format(fecha);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return fechaOriginal; // Devuelve la original si falla
+        }
+    }
+
     public static class AnimalViewHolder extends RecyclerView.ViewHolder {
-        TextView textCrotal, textNacimiento, textPeso;
+        TextView textCrotal, textNacimiento, textPeso,grupo;
 
         public AnimalViewHolder(@NonNull View itemView) {
             super(itemView);
             textCrotal = itemView.findViewById(R.id.textCrotal);
             textNacimiento = itemView.findViewById(R.id.textNacimiento);
             textPeso = itemView.findViewById(R.id.textPeso);
+            grupo = itemView.findViewById(R.id.grupo);
         }
 
-        public void bind(Animal animal, OnAnimalClickListener listener) {
+        public void bind(Animal animal,String fechaFormateada, OnAnimalClickListener listener) {
             String emoji = getEmojiForGrupo(animal.getGrupo());
 
-            textCrotal.setText(emoji + " Crotal: " + animal.getCrotal());
-            textNacimiento.setText("📅 Nacimiento: " + animal.getFechaNacimiento());
+            textCrotal.setText("#️⃣ Crotal: " + animal.getCrotal());
+            grupo.setText(emoji + " Grupo: " + animal.getGrupo());
+            textNacimiento.setText("📅 Nacimiento: " + fechaFormateada);
             textPeso.setText("⚖️ Peso: " + animal.getPeso() + " kg");
 
             itemView.setOnClickListener(v -> listener.onAnimalClick(animal));

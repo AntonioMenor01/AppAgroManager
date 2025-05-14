@@ -56,5 +56,6 @@
         android:contentDescription="Añadir Animal"
         android:src="@drawable/ic_add"
         app:tint="@android:color/white"
+        android:backgroundTint="@color/verde"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"  />
 </LinearLayout>

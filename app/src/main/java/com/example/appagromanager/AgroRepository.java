@@ -28,6 +28,83 @@ public class AgroRepository {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
 
+    public LiveData<Boolean> updateAnimal(String crotal, Animal animalActualizado) {
+        MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(animalActualizado);
+
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?crotal=eq." + crotal;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(body)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al actualizar el animal: " + e.getMessage());
+                resultLiveData.postValue(false);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                if (response.isSuccessful()) {
+                    Log.d("AgroRepository", "Animal actualizado correctamente");
+                    resultLiveData.postValue(true);
+                } else {
+                    Log.e("AgroRepository", "Error al actualizar: " + response.code());
+                    resultLiveData.postValue(false);
+                }
+            }
+        });
+
+        return resultLiveData;
+    }
+
+
+
+    public LiveData<Boolean> deleteAnimal(String crotal) {
+        MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?crotal=eq." + crotal;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .delete()
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .addHeader("Prefer", "return=minimal")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al eliminar el animal: " + e.getMessage());
+                resultLiveData.postValue(false);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                if (response.isSuccessful()) {
+                    Log.d("AgroRepository", "Animal eliminado correctamente");
+                    resultLiveData.postValue(true);
+                } else {
+                    Log.e("AgroRepository", "Error en la respuesta al eliminar: " + response.code());
+                    resultLiveData.postValue(false);
+                }
+            }
+        });
+
+        return resultLiveData;
+    }
+
     public LiveData<List<Finca>> getFinca() {
         MutableLiveData<List<Finca>> fincasLiveData = new MutableLiveData<>();
 

@@ -14,12 +14,18 @@
         android:radius="18dp"
         android:padding="16dp">
 
+
         <TextView
             android:id="@+id/textCrotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🐄 Crotal: ES123456789"
+            android:text="Crotal: ES123456789"
             android:textStyle="bold" />
+        <TextView
+            android:id="@+id/grupo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🐄 Grupo: Ovino"/>
 
         <TextView
             android:id="@+id/textNacimiento"
