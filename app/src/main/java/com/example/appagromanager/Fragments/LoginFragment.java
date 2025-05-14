@@ -1,4 +1,4 @@
-package com.example.appagromanager;
+package com.example.appagromanager.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,18 +7,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
-
+import com.example.appagromanager.AuthViewModel;
+import com.example.appagromanager.activity.MainActivity;
+import com.example.appagromanager.R;
 import com.example.appagromanager.databinding.FragmentLoginBinding;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
-    private FirebaseAuth mAuth;
+    private AuthViewModel viewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -31,13 +32,27 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
+        viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-        if (mAuth.getCurrentUser () != null) {
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            startActivity(intent);
-            return;
+        if (viewModel.isUserLoggedIn()) {
+            startActivity(new Intent(requireActivity(), MainActivity.class));
+            requireActivity().finish();
         }
+
+        viewModel.getAuthSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (success != null && success) {
+                startActivity(new Intent(requireActivity(), MainActivity.class));
+                requireActivity().finish();
+            }
+        });
+
+        viewModel.getAuthError().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_LONG).show();
+                binding.loginButton.setEnabled(true);
+                binding.loginButton.setText("Iniciar Sesión");
+            }
+        });
 
         binding.registerButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(this)
@@ -55,20 +70,7 @@ public class LoginFragment extends Fragment {
 
             binding.loginButton.setEnabled(false);
             binding.loginButton.setText("Cargando...");
-
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(requireActivity(), task -> {
-                        binding.loginButton.setEnabled(true);
-
-                        if (task.isSuccessful()) {
-                            Intent intent = new Intent(requireActivity(), MainActivity.class);
-                            startActivity(intent);
-                            requireActivity().finish();
-                        } else {
-                            Toast.makeText(getContext(), "Error: " + task.getException().getMessage(),
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    });
+            viewModel.login(email, password);
         });
     }
 

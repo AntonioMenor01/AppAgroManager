@@ -6,7 +6,7 @@
     app:startDestination="@id/homeFragment">
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.appagromanager.HomeFragment"
+        android:name="com.example.appagromanager.Fragments.HomeFragment"
         android:label="Inicio"
         tools:layout="@layout/fragment_home" >
         <action
@@ -24,7 +24,7 @@
     </fragment>
     <fragment
         android:id="@+id/animalesFragment"
-        android:name="com.example.appagromanager.AnimalesFragment"
+        android:name="com.example.appagromanager.Fragments.AnimalesFragment"
         android:label="Gestion de animales"
         tools:layout="@layout/fragment_animales" >
         <action
@@ -39,10 +39,13 @@
         <action
             android:id="@+id/action_animalesFragment_to_fincasFragment"
             app:destination="@id/fincasFragment" />
+        <action
+            android:id="@+id/action_animalesFragment_to_detalleAnimalFragment"
+            app:destination="@id/detalleAnimalFragment" />
     </fragment>
     <fragment
         android:id="@+id/piensoFragment"
-        android:name="com.example.appagromanager.PiensoFragment"
+        android:name="com.example.appagromanager.Fragments.PiensoFragment"
         android:label="Stock del Pienso"
         tools:layout="@layout/fragment_pienso" >
         <action
@@ -60,7 +63,7 @@
     </fragment>
     <fragment
         android:id="@+id/insumosFragment"
-        android:name="com.example.appagromanager.InsumosFragment"
+        android:name="com.example.appagromanager.Fragments.InsumosFragment"
         android:label="Insumos"
         tools:layout="@layout/fragment_insumos" >
         <action
@@ -78,7 +81,7 @@
     </fragment>
     <fragment
         android:id="@+id/fincasFragment"
-        android:name="com.example.appagromanager.FincasFragment"
+        android:name="com.example.appagromanager.Fragments.FincasFragment"
         android:label="Fincas"
         tools:layout="@layout/fragment_fincas" >
         <action
@@ -97,7 +100,7 @@
 
         <fragment
             android:id="@+id/cerrarSesion"
-            android:name="com.example.appagromanager.CerrarSesion"
+            android:name="com.example.appagromanager.Fragments.CerrarSesion"
             android:label="Cerrar sesión"
             tools:layout="@layout/fragment_cerrar_sesion" >
             <action
@@ -106,7 +109,7 @@
         </fragment>
         <fragment
             android:id="@+id/cambiarPasswd"
-            android:name="com.example.appagromanager.CambiarPasswd"
+            android:name="com.example.appagromanager.Fragments.CambiarPasswd"
             android:label="Cambiar contraseña"
             tools:layout="@layout/fragment_cambiar_passwd" >
             <action
@@ -115,7 +118,7 @@
         </fragment>
         <fragment
             android:id="@+id/detallesUser"
-            android:name="com.example.appagromanager.DetallesUser"
+            android:name="com.example.appagromanager.Fragments.DetallesUser"
             android:label="Detalles del usuario"
             tools:layout="@layout/fragment_detalles_user" >
             <action
@@ -125,6 +128,15 @@
                 android:id="@+id/action_detallesUser_to_cambiarPasswd"
                 app:destination="@id/cambiarPasswd" />
         </fragment>
+    <fragment
+        android:id="@+id/detalleAnimalFragment"
+        android:name="com.example.appagromanager.Fragments.DetalleAnimalFragment"
+        android:label="Detalles Animal"
+        tools:layout="@layout/fragment_detalle_animal" >
+        <action
+            android:id="@+id/action_detalleAnimalFragment_to_animalesFragment"
+            app:destination="@id/animalesFragment" />
+    </fragment>
 
 
 </navigation>

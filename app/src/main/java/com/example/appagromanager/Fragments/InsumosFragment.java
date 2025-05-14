@@ -1,4 +1,4 @@
-package com.example.appagromanager;
+package com.example.appagromanager.Fragments;
 
 import android.os.Bundle;
 
@@ -8,13 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.appagromanager.R;
 
-public class AnimalesFragment extends Fragment {
+
+public class InsumosFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_animales, container, false);
+        return inflater.inflate(R.layout.fragment_insumos, container, false);
     }
 }

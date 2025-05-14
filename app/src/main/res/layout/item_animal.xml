@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="4dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:radius="18dp"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textCrotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🐄 Crotal: ES123456789"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textNacimiento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📅 Nacimiento: 2023-01-01" />
+
+        <TextView
+            android:id="@+id/textPeso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚖️ Peso: 150 kg" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

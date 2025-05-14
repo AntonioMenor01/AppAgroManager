@@ -1,14 +1,14 @@
-package com.example.appagromanager;
+package com.example.appagromanager.Fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.appagromanager.activity.LoginActivity;
 import com.example.appagromanager.databinding.FragmentCerrarSesionBinding;
 import com.google.firebase.auth.FirebaseAuth;
 
