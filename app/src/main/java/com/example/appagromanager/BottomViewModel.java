@@ -37,14 +37,28 @@ public class BottomViewModel extends ViewModel {
     public LiveData<Boolean> getEliminado() {
         return eliminado;
     }
-    public void eliminarAnimal(String crotal) {
-        agroRepository.deleteAnimal(crotal).observeForever(eliminado::postValue);
+    public void eliminarAnimal(String animalId) {
+        agroRepository.deleteAnimal(animalId).observeForever(eliminado::postValue);
     }
 
     public LiveData<Boolean> getActualizado() {
         return actualizado;
     }
-    public void actualizarAnimal(String crotal, Animal animalActualizado) {
-        agroRepository.updateAnimal(crotal, animalActualizado).observeForever(actualizado::postValue);
+    public void actualizarAnimal(String animalId, Animal animalActualizado) {
+        agroRepository.updateAnimal(animalId, animalActualizado).observeForever(result -> actualizado.setValue(result));
     }
+
+    private final MutableLiveData<Boolean> creado = new MutableLiveData<>();
+
+    public LiveData<Boolean> getCreado() {
+        return creado;
+    }
+    public void resetCreado() {
+        creado.setValue(false);
+    }
+    public void crearAnimal(Animal nuevoAnimal) {
+        agroRepository.addAnimal(nuevoAnimal).observeForever(creado::postValue);
+    }
+
+
 }

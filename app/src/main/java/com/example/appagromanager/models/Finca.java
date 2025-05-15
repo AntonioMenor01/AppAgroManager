@@ -64,4 +64,10 @@ public class Finca implements Parcelable {
         dest.writeString(nombre);
         dest.writeString(ubicacion);
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }

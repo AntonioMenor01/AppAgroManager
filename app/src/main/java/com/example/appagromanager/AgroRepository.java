@@ -28,15 +28,57 @@ public class AgroRepository {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
 
-    //prueba
-    public LiveData<Boolean> updateAnimal(String crotal, Animal animalActualizado) {
+    public LiveData<Boolean> addAnimal(Animal nuevoAnimal) {
+        MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(nuevoAnimal);
+
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url("https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal")
+                .post(body)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al crear el animal: " + e.getMessage());
+                resultLiveData.postValue(false);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                if (response.isSuccessful()) {
+                    Log.d("AgroRepository", "Animal creado correctamente");
+                    resultLiveData.postValue(true);
+                } else {
+                    try {
+                        Log.e("AgroRepository", "Error al crear el animal: " + response.code() + " - " + response.body().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    resultLiveData.postValue(false);
+                }
+            }
+        });
+
+        return resultLiveData;
+    }
+
+    public LiveData<Boolean> updateAnimal(String animalId, Animal animalActualizado) {
         MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
 
         Gson gson = new Gson();
         String json = gson.toJson(animalActualizado);
 
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
-        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?crotal=eq." + crotal;
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?id=eq." + animalId;
 
         Request request = new Request.Builder()
                 .url(url)
@@ -69,12 +111,10 @@ public class AgroRepository {
         return resultLiveData;
     }
 
-
-
-    public LiveData<Boolean> deleteAnimal(String crotal) {
+    public LiveData<Boolean> deleteAnimal(String animalId) {
         MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
 
-        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?crotal=eq." + crotal;
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?id=eq." + animalId;
 
         Request request = new Request.Builder()
                 .url(url)
