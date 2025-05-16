@@ -1,12 +1,17 @@
 package com.example.appagromanager.Fragments;
 
+import static androidx.navigation.Navigation.findNavController;
+import static com.example.appagromanager.Fragments.AnimalesFragment.observarUnaVez;
+
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +30,8 @@ import com.example.appagromanager.models.Finca;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.navigation.fragment.NavHostFragment;
 
 public class DetalleAnimalFragment extends Fragment {
 
@@ -75,9 +82,11 @@ public class DetalleAnimalFragment extends Fragment {
         bottomViewModel.getEliminado().observe(getViewLifecycleOwner(), eliminado -> {
             if (eliminado != null && eliminado) {
                 Toast.makeText(requireContext(), "Animal eliminado correctamente", Toast.LENGTH_SHORT).show();
-                requireActivity().onBackPressed();
-            } else {
+                bottomViewModel.resetEliminado();
+                NavHostFragment.findNavController(DetalleAnimalFragment.this).popBackStack();
+            } else if (eliminado != null) {
                 Toast.makeText(requireContext(), "Error al eliminar el animal", Toast.LENGTH_SHORT).show();
+                bottomViewModel.resetEliminado();
             }
         });
 
@@ -215,19 +224,48 @@ public class DetalleAnimalFragment extends Fragment {
             return;
         }
 
+        double pesoDouble;
+        try {
+            pesoDouble = Double.parseDouble(peso);
+        } catch (NumberFormatException e) {
+            Toast.makeText(requireContext(), "Peso inválido", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!crotal.equals(animal.getCrotal())) {
+            String finalFincaId = fincaId;
+            observarUnaVez(bottomViewModel.verificarCrotal(crotal), getViewLifecycleOwner(), enUso -> {
+                if (Boolean.TRUE.equals(enUso)) {
+                    Toast.makeText(requireContext(), "El crotal ya está en uso", Toast.LENGTH_SHORT).show();
+                    binding.textCrotal.requestFocus();
+                    binding.textCrotal.setText(animal.getCrotal());
+                    InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        imm.showSoftInput(binding.textCrotal, InputMethodManager.SHOW_IMPLICIT);
+                    }
+                } else {
+                    ejecutarActualizacion(animal, crotal, pesoDouble, finalFincaId);
+                }
+            });
+        } else {
+            ejecutarActualizacion(animal, crotal, pesoDouble, fincaId);
+        }
+
+    }
+
+    private void ejecutarActualizacion(Animal animal, String crotal, double peso, String fincaId) {
         animal.setCrotal(crotal);
-        animal.setPeso(Double.parseDouble(peso));
+        animal.setPeso(peso);
         animal.setFincaId(fincaId);
 
         bottomViewModel.actualizarAnimal(animal.getId(), animal);
         binding.textPeso.setText(animal.getPeso() + " kg");
-        bottomViewModel.getActualizado().observe(getViewLifecycleOwner(), resultado -> {
-            if (resultado != null) {
-                if (resultado) {
-                    Toast.makeText(requireContext(), "Animal actualizado con éxito", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(requireContext(), "Error al actualizar el animal", Toast.LENGTH_SHORT).show();
-                }
+
+        observarUnaVez(bottomViewModel.getActualizado(), getViewLifecycleOwner(), resultado -> {
+            if (Boolean.TRUE.equals(resultado)) {
+                Toast.makeText(requireContext(), "Animal actualizado con éxito", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "Error al actualizar el animal", Toast.LENGTH_SHORT).show();
             }
         });
     }

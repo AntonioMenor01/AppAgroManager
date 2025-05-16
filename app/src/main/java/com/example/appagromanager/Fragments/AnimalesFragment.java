@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -41,7 +44,6 @@ public class AnimalesFragment extends Fragment {
     private AnimalAdapter adapter;
     private List<Finca> listaFincas = null;
 
-    // Variable para controlar el diálogo y cerrarlo desde el observer
     private AlertDialog dialogNuevoAnimal;
 
     @Override
@@ -117,11 +119,31 @@ public class AnimalesFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
 
+        TextWatcher filtrosWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                aplicarFiltros();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        };
+
+
+
+        binding.pesoMinEditText.addTextChangedListener(filtrosWatcher);
+        binding.pesoMaxEditText.addTextChangedListener(filtrosWatcher);
+        binding.edadMinEditText.addTextChangedListener(filtrosWatcher);
+        binding.edadMaxEditText.addTextChangedListener(filtrosWatcher);
+
+
         binding.nuevoAnimal.setOnClickListener(v -> {
             mostrarDialogoNuevoAnimal();
         });
 
-        // Observer único para el LiveData 'creado' que controla la respuesta a creación de animal
         bottomViewModel.getCreado().observe(getViewLifecycleOwner(), creado -> {
             if (creado != null && creado) {
                 Toast.makeText(getContext(), "Animal añadido con éxito", Toast.LENGTH_SHORT).show();
@@ -130,14 +152,27 @@ public class AnimalesFragment extends Fragment {
                 String grupoSeleccionado = (String) binding.grupoSpinner.getSelectedItem();
                 bottomViewModel.obtenerAnimalesPorGrupo(grupoSeleccionado);
 
-                // Cerrar diálogo si está abierto
                 if (dialogNuevoAnimal != null && dialogNuevoAnimal.isShowing()) {
                     dialogNuevoAnimal.dismiss();
                 }
-            } else if (creado != null) {
-                Toast.makeText(getContext(), "Campos rellenados erroneamente", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void aplicarFiltros() {
+        String pesoMinStr = binding.pesoMinEditText.getText().toString().trim();
+        String pesoMaxStr = binding.pesoMaxEditText.getText().toString().trim();
+        String edadMinStr = binding.edadMinEditText.getText().toString().trim();
+        String edadMaxStr = binding.edadMaxEditText.getText().toString().trim();
+        String grupoSeleccionado = (String) binding.grupoSpinner.getSelectedItem();
+        String crotal = binding.busquedaEditText.getText().toString().trim();
+
+        Double pesoMin = pesoMinStr.isEmpty() ? null : Double.parseDouble(pesoMinStr);
+        Double pesoMax = pesoMaxStr.isEmpty() ? null : Double.parseDouble(pesoMaxStr);
+        Integer edadMin = edadMinStr.isEmpty() ? null : Integer.parseInt(edadMinStr);
+        Integer edadMax = edadMaxStr.isEmpty() ? null : Integer.parseInt(edadMaxStr);
+
+        bottomViewModel.filtrarAnimales(crotal, grupoSeleccionado, pesoMin, pesoMax, edadMin, edadMax);
     }
 
     private void mostrarDialogoNuevoAnimal() {
@@ -151,90 +186,141 @@ public class AnimalesFragment extends Fragment {
         Spinner grupoSpinner = dialogView.findViewById(R.id.grupoSpinner);
         Spinner fincaSpinner = dialogView.findViewById(R.id.fincaSpinner);
 
-        ArrayAdapter<CharSequence> grupoAdapter = ArrayAdapter.createFromResource(
-                requireContext(),
-                R.array.grupos_array,
-                android.R.layout.simple_spinner_item
-        );
-        grupoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        grupoSpinner.setAdapter(grupoAdapter);
+        try {
+            ArrayAdapter<CharSequence> grupoAdapter = ArrayAdapter.createFromResource(
+                    requireContext(),
+                    R.array.grupos_array,
+                    android.R.layout.simple_spinner_item
+            );
+            grupoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            grupoSpinner.setAdapter(grupoAdapter);
+        } catch (Exception e) {
+            Log.e("AnimalesFragment", "Error al cargar grupos: " + e.getMessage());
+            Toast.makeText(getContext(), "Error al cargar los grupos", Toast.LENGTH_SHORT).show();
+        }
 
         fechaNacimientoEditText.setOnClickListener(v -> {
-            DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    requireContext(),
-                    (view, year, month, dayOfMonth) -> {
-                        String fecha = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
-                        fechaNacimientoEditText.setText(fecha);
-                    },
-                    2020, 0, 1
-            );
-            datePickerDialog.show();
-        });
-
-        // Observar las fincas para llenar el spinner
-        bottomViewModel.getFincas().observe(getViewLifecycleOwner(), fincas -> {
-            if (fincas != null && !fincas.isEmpty()) {
-                listaFincas = fincas;
-                ArrayAdapter<Finca> fincaAdapter = new ArrayAdapter<>(
+            try {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(
                         requireContext(),
-                        android.R.layout.simple_spinner_item,
-                        fincas
+                        (view, year, month, dayOfMonth) -> {
+                            String fecha = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                            fechaNacimientoEditText.setText(fecha);
+                        },
+                        2025, 0, 1
                 );
-                fincaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                fincaSpinner.setAdapter(fincaAdapter);
-            } else {
-                Log.e("AnimalesFragment", "Lista de fincas está vacía o null");
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+                datePickerDialog.show();
+            } catch (Exception e) {
+                Log.e("AnimalesFragment", "Error con el DatePicker: " + e.getMessage());
+                Toast.makeText(getContext(), "Error al seleccionar la fecha", Toast.LENGTH_SHORT).show();
             }
         });
 
-        bottomViewModel.obtenerFincas();
+        try {
+            bottomViewModel.getFincas().observe(getViewLifecycleOwner(), fincas -> {
+                if (fincas != null && !fincas.isEmpty()) {
+                    listaFincas = fincas;
+                    ArrayAdapter<Finca> fincaAdapter = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            fincas
+                    );
+                    fincaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    fincaSpinner.setAdapter(fincaAdapter);
+                } else {
+                    Log.e("AnimalesFragment", "Lista de fincas vacía o nula");
+                    Toast.makeText(getContext(), "No se encontraron fincas disponibles", Toast.LENGTH_SHORT).show();
+                }
+            });
+            bottomViewModel.obtenerFincas();
+        } catch (Exception e) {
+            Log.e("AnimalesFragment", "Error al observar fincas: " + e.getMessage());
+            Toast.makeText(getContext(), "Error al cargar fincas", Toast.LENGTH_SHORT).show();
+        }
 
         dialogNuevoAnimal = builder
                 .setTitle("Nuevo Animal")
-                .setPositiveButton("Guardar", null)  // Listener null para sobrescribir después
+                .setPositiveButton("Guardar", null)
                 .setNegativeButton("Cancelar", (d, which) -> d.dismiss())
                 .create();
 
         dialogNuevoAnimal.show();
 
         dialogNuevoAnimal.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            String crotal = crotalEditText.getText().toString().trim();
-            String pesoStr = pesoEditText.getText().toString().trim();
-            String fechaNacimiento = fechaNacimientoEditText.getText().toString().trim();
-            String grupo = grupoSpinner.getSelectedItem().toString();
-            Finca fincaSeleccionada = (Finca) fincaSpinner.getSelectedItem();
-
-            if (crotal.isEmpty() || pesoStr.isEmpty() || fechaNacimiento.isEmpty() || fincaSeleccionada == null) {
-                Toast.makeText(getContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
-                return;  // NO cierra el diálogo
-            }
-
-            double peso;
             try {
-                peso = Double.parseDouble(pesoStr);
-                if (peso <= 0) {
-                    Toast.makeText(getContext(), "El peso debe ser mayor que cero", Toast.LENGTH_SHORT).show();
+                String crotal = crotalEditText.getText().toString().trim();
+                String pesoStr = pesoEditText.getText().toString().trim();
+                String fechaNacimiento = fechaNacimientoEditText.getText().toString().trim();
+                String grupo = (grupoSpinner.getSelectedItem() != null) ? grupoSpinner.getSelectedItem().toString() : "";
+                Finca fincaSeleccionada = (Finca) fincaSpinner.getSelectedItem();
+
+                if (crotal.isEmpty() || pesoStr.isEmpty() || fechaNacimiento.isEmpty() || grupo.isEmpty() || fincaSeleccionada == null) {
+                    Toast.makeText(getContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
                     return;
                 }
-            } catch (NumberFormatException e) {
-                Toast.makeText(getContext(), "Peso inválido", Toast.LENGTH_SHORT).show();
-                return;
+
+                if (grupo.equals("Selecciona un grupo ...")) {
+                    Toast.makeText(getContext(), "Por favor selecciona un grupo válido", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                double peso;
+                try {
+                    peso = Double.parseDouble(pesoStr);
+                    if (peso <= 0) {
+                        Toast.makeText(getContext(), "El peso debe ser mayor que cero", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(getContext(), "Peso inválido", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                observarUnaVez(bottomViewModel.verificarCrotal(crotal), getViewLifecycleOwner(), enUso -> {
+                    if (Boolean.TRUE.equals(enUso)) {
+                        Toast.makeText(getContext(), "El crotal ya está en uso", Toast.LENGTH_SHORT).show();
+                    } else {
+                        try {
+                            Animal nuevoAnimal = new Animal();
+                            nuevoAnimal.setCrotal(crotal);
+                            nuevoAnimal.setPeso(peso);
+                            nuevoAnimal.setGrupo(grupo);
+                            nuevoAnimal.setFincaId(fincaSeleccionada.getId());
+                            nuevoAnimal.setFechaNacimiento(fechaNacimiento);
+
+                            String fechaInsercion = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                            nuevoAnimal.setFechaInsercion(fechaInsercion);
+
+                            bottomViewModel.crearAnimal(nuevoAnimal);
+
+                            dialogNuevoAnimal.dismiss();
+                        } catch (Exception e) {
+                            Log.e("AnimalesFragment", "Error al crear el animal: " + e.getMessage());
+                            Toast.makeText(getContext(), "Error al guardar el animal", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+            } catch (Exception e) {
+                Log.e("AnimalesFragment", "Error general al guardar: " + e.getMessage());
+                Toast.makeText(getContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
             }
-
-            Animal nuevoAnimal = new Animal();
-            nuevoAnimal.setCrotal(crotal);
-            nuevoAnimal.setPeso(peso);
-            nuevoAnimal.setGrupo(grupo);
-            nuevoAnimal.setFincaId(fincaSeleccionada.getId());
-            nuevoAnimal.setFechaNacimiento(fechaNacimiento);
-
-            String fechaInsercion = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-            nuevoAnimal.setFechaInsercion(fechaInsercion);
-
-            bottomViewModel.crearAnimal(nuevoAnimal);
-            // No cerramos el diálogo aquí, esperamos respuesta LiveData
         });
     }
+
+    //Para solo observar una vez el livedata y que no haya peticiones duplicadas
+    public static <T> void observarUnaVez(LiveData<T> liveData, LifecycleOwner owner, Observer<T> observer) {
+        liveData.observe(owner, new Observer<T>() {
+            @Override
+            public void onChanged(T t) {
+                observer.onChanged(t);
+                liveData.removeObserver(this);
+            }
+        });
+    }
+
 
     @Override
     public void onResume() {

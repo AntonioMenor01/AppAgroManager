@@ -1,5 +1,6 @@
 package com.example.appagromanager;
 
+import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -11,9 +12,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.List;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.util.Locale;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -27,6 +33,45 @@ public class AgroRepository {
     private final static String APIKEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZldnFmcWZhZWtmcHZjb21ubmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MDk1MDQsImV4cCI6MjA1Nzk4NTUwNH0.T33ffe9y6UYnljC_xMlwBnHchYsjcUgtDRaDz53C6h4";
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
+
+
+    public LiveData<List<Animal>> getAnimalesPorPeso(Double peso) {
+        MutableLiveData<List<Animal>> animalesLiveData = new MutableLiveData<>();
+
+        String url;
+            url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?select=*&peso=eq." + peso;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al obtener los animales: " + e.getMessage());
+                animalesLiveData.postValue(null);
+            }
+
+            @Override
+            public void onResponse(@NonNull okhttp3.Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    Log.d("AgroRepository", "Respuesta de la API: " + responseBody);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<List<Animal>>() {}.getType();
+                    List<Animal> animales = gson.fromJson(responseBody, listType);
+                    animalesLiveData.postValue(animales);
+                } else {
+                    Log.e("AgroRepository", "Error al obtener los animales, código de respuesta: " + response.code());
+                    animalesLiveData.postValue(null);
+                }
+            }
+        });
+
+        return animalesLiveData;
+    }
 
     public LiveData<Boolean> addAnimal(Animal nuevoAnimal) {
         MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
@@ -178,6 +223,92 @@ public class AgroRepository {
         });
 
         return fincasLiveData;
+    }
+
+    public LiveData<Boolean> isCrotalEnUso(String crotal) {
+        MutableLiveData<Boolean> enUsoLiveData = new MutableLiveData<>();
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?crotal=eq." + crotal;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error verificando crotal: " + e.getMessage());
+                enUsoLiveData.postValue(false);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    enUsoLiveData.postValue(!responseBody.equals("[]")); // Si no está vacío, está en uso
+                } else {
+                    enUsoLiveData.postValue(false);
+                }
+            }
+        });
+
+        return enUsoLiveData;
+    }
+
+    public LiveData<List<Animal>> getAnimalesPorPesoYEdad(Double pesoMin, Double pesoMax, Integer edadMin, Integer edadMax) {
+        MutableLiveData<List<Animal>> animalesLiveData = new MutableLiveData<>();
+
+        StringBuilder urlBuilder = new StringBuilder("https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?select=*");
+
+        if (pesoMin != null) urlBuilder.append("&peso=gte.").append(pesoMin);
+        if (pesoMax != null) urlBuilder.append("&peso=lte.").append(pesoMax);
+
+        LocalDate fechaActual = null;
+        if (edadMin != null || edadMax != null) {
+            LocalDate fechaInicio = null;
+            LocalDate fechaFin = null;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                fechaActual = LocalDate.now();
+                if (edadMax != null) fechaFin = fechaActual.minusYears(edadMax);
+                if (edadMin != null) fechaInicio = fechaActual.minusYears(edadMin);
+            }
+
+            if (fechaInicio != null) urlBuilder.append("&fechaNacimiento=lte.").append(fechaInicio);
+            if (fechaFin != null) urlBuilder.append("&fechaNacimiento=gte.").append(fechaFin);
+        }
+
+        String url = urlBuilder.toString();
+
+        Log.d("AgroRepository", "URL filtro peso+edad: " + url);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
+                animalesLiveData.postValue(null);
+            }
+
+            @Override
+            public void onResponse(@NonNull okhttp3.Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    List<Animal> animales = new Gson().fromJson(responseBody, new TypeToken<List<Animal>>() {}.getType());
+                    animalesLiveData.postValue(animales);
+                } else {
+                    animalesLiveData.postValue(null);
+                }
+            }
+        });
+
+        return animalesLiveData;
     }
 
     public LiveData<List<Animal>> getAnimales(String grupoFiltro) {

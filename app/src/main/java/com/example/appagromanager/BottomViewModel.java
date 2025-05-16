@@ -1,9 +1,11 @@
 package com.example.appagromanager;
 
+import android.os.Build;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import com.example.appagromanager.models.Animal;
 import com.example.appagromanager.models.Finca;
@@ -17,6 +19,7 @@ public class BottomViewModel extends ViewModel {
     private final MutableLiveData<List<Finca>> fincas = new MutableLiveData<>();
     private final MutableLiveData<Boolean> eliminado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> actualizado = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> crotalEnUSo = new MutableLiveData<>();
 
     public LiveData<List<Animal>> getAnimales() {
         return animales;
@@ -36,6 +39,9 @@ public class BottomViewModel extends ViewModel {
 
     public LiveData<Boolean> getEliminado() {
         return eliminado;
+    }
+    public void resetEliminado() {
+        eliminado.setValue(null);
     }
     public void eliminarAnimal(String animalId) {
         agroRepository.deleteAnimal(animalId).observeForever(eliminado::postValue);
@@ -57,8 +63,42 @@ public class BottomViewModel extends ViewModel {
         creado.setValue(false);
     }
     public void crearAnimal(Animal nuevoAnimal) {
-        agroRepository.addAnimal(nuevoAnimal).observeForever(creado::postValue);
+        LiveData<Boolean> resultado = agroRepository.addAnimal(nuevoAnimal);
+        resultado.observeForever(new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean success) {
+                creado.postValue(success);
+                resultado.removeObserver(this);
+            }
+        });
     }
+
+
+    public LiveData<Boolean> getCrotalEnUSo() {
+        return crotalEnUSo;
+    }
+    public LiveData<Boolean> verificarCrotal(String crotal) {
+        return agroRepository.isCrotalEnUso(crotal);
+    }
+
+    public void filtrarAnimales(String crotal, String grupo, Double pesoMin, Double pesoMax, Integer edadMin, Integer edadMax) {
+        agroRepository.getAnimalesPorPesoYEdad(pesoMin, pesoMax, edadMin, edadMax)
+                .observeForever(animales -> {
+                    if (animales != null) {
+                        List<Animal> filtrados = null;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            filtrados = animales.stream()
+                                    .filter(a -> (crotal == null || crotal.isEmpty() || a.getCrotal().toLowerCase().contains(crotal.toLowerCase())) &&
+                                            (grupo == null || grupo.isEmpty() || grupo.equals("Selecciona un grupo ...") || grupo.equals(a.getGrupo())))
+                                    .toList();
+                        }
+                        this.animales.postValue(filtrados);
+                    } else {
+                        this.animales.postValue(null);
+                    }
+                });
+    }
+
 
 
 }
