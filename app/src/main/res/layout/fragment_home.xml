@@ -5,11 +5,12 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.HomeFragment">
 
-    <ImageView
-        android:id="@+id/imageView2"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:src="@drawable/ic_home" />
-
+        android:text="Cargando clima..."
+        android:textSize="18sp"
+        android:padding="16dp" />
 </FrameLayout>

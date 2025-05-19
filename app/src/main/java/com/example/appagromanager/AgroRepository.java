@@ -35,6 +35,47 @@ public class AgroRepository {
     private final OkHttpClient client = new OkHttpClient();
 
 
+    public LiveData<Usuario> obtenerDatosUsuario() {
+        MutableLiveData<Usuario> usuarioLiveData = new MutableLiveData<>();
+        String email = mAuth.getCurrentUser().getEmail();
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Usuario?email=eq." + email;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al obtener usuario: " + e.getMessage());
+                usuarioLiveData.postValue(null);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    Log.d("AgroRepository", "Usuario encontrado: " + responseBody);
+
+                    List<Usuario> usuarios = new Gson().fromJson(responseBody, new TypeToken<List<Usuario>>() {}.getType());
+
+                    if (!usuarios.isEmpty()) {
+                        usuarioLiveData.postValue(usuarios.get(0));
+                    } else {
+                        usuarioLiveData.postValue(null);
+                    }
+                } else {
+                    Log.e("AgroRepository", "Error en la respuesta: " + response.code());
+                    usuarioLiveData.postValue(null);
+                }
+            }
+        });
+
+        return usuarioLiveData;
+    }
+
     public LiveData<List<Animal>> getAnimalesPorPeso(Double peso) {
         MutableLiveData<List<Animal>> animalesLiveData = new MutableLiveData<>();
 
