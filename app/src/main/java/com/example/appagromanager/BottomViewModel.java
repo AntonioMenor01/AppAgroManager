@@ -20,6 +20,7 @@ public class BottomViewModel extends ViewModel {
     private final MutableLiveData<Boolean> eliminado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> actualizado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> crotalEnUSo = new MutableLiveData<>();
+    private final MutableLiveData<Double> consumoPorAnimal = new MutableLiveData<>();
 
     public LiveData<List<Animal>> getAnimales() {
         return animales;
@@ -101,7 +102,6 @@ public class BottomViewModel extends ViewModel {
     public LiveData<Integer> getCantidadAnimalesPorGrupo(String grupo) {
         return agroRepository.getCantidadAnimalesPorGrupo(grupo);
     }
-
     public LiveData<Animal> getAnimalMasViejoPorGrupo(String grupo) {
         return agroRepository.getAnimalMasViejoPorGrupo(grupo);
     }

@@ -235,45 +235,6 @@ public class AgroRepository {
 
         return usuarioLiveData;
     }
-
-    public LiveData<List<Animal>> getAnimalesPorPeso(Double peso) {
-        MutableLiveData<List<Animal>> animalesLiveData = new MutableLiveData<>();
-
-        String url;
-            url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?select=*&peso=eq." + peso;
-
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", APIKEY)
-                .addHeader("Authorization", "Bearer " + APIKEY)
-                .build();
-
-        client.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
-                Log.e("AgroRepository", "Error al obtener los animales: " + e.getMessage());
-                animalesLiveData.postValue(null);
-            }
-
-            @Override
-            public void onResponse(@NonNull okhttp3.Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful() && response.body() != null) {
-                    String responseBody = response.body().string();
-                    Log.d("AgroRepository", "Respuesta de la API: " + responseBody);
-                    Gson gson = new Gson();
-                    Type listType = new TypeToken<List<Animal>>() {}.getType();
-                    List<Animal> animales = gson.fromJson(responseBody, listType);
-                    animalesLiveData.postValue(animales);
-                } else {
-                    Log.e("AgroRepository", "Error al obtener los animales, código de respuesta: " + response.code());
-                    animalesLiveData.postValue(null);
-                }
-            }
-        });
-
-        return animalesLiveData;
-    }
-
     public LiveData<Boolean> addAnimal(Animal nuevoAnimal) {
         MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
 

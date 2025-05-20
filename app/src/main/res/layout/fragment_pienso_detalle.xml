@@ -1,0 +1,52 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+
+    <ImageView
+        android:id="@+id/imagenAnimal"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/alimentar"
+        android:layout_gravity="center"
+        android:contentDescription="Imagen del animal" />
+
+
+    <Spinner
+        android:id="@+id/spinnerGrupo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textCantidad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cantidad a consumir: 0 kg"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/buttonAlimentar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Alimentar"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:id="@+id/textViewConsumoPorAnimal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Consumo por animal: --"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/textViewConsumoTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Consumo total del grupo: --"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

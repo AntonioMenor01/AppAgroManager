@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tab_graph"
+    app:startDestination="@id/piensoFragment2">
+
+    <fragment
+        android:id="@+id/piensoFragment2"
+        android:name="com.example.appagromanager.Fragments.PiensoFragment"
+        android:label="fragment_pienso"
+        tools:layout="@layout/fragment_pienso" />
+</navigation>
