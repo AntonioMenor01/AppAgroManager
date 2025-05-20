@@ -11,7 +11,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.appagromanager.R;
 import com.example.appagromanager.RetrofitClient;
 import com.example.appagromanager.models.WeatherResponse;
 import com.example.appagromanager.WeatherService;
@@ -34,7 +37,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String lastCity = prefs.getString(KEY_LAST_CITY, "Madrid");
+        String lastCity = prefs.getString(KEY_LAST_CITY, "Cáceres");
 
         binding.etCitySearch.setText(lastCity);
         getForecast(lastCity);
@@ -50,6 +53,10 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Introduce una ciudad válida", Toast.LENGTH_SHORT).show();
             }
         });
+
+        binding.imageOvejas.setOnClickListener(v -> openAnimalDetail("Ovejas"));
+        binding.imageVacas.setOnClickListener(v -> openAnimalDetail("Vacas"));
+        binding.imageCerdos.setOnClickListener(v -> openAnimalDetail("Cerdos"));
 
         return binding.getRoot();
     }
@@ -108,4 +115,12 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+    private void openAnimalDetail(String animalName) {
+        Bundle bundle = new Bundle();
+        bundle.putString("animal_name", animalName);
+
+        NavController navController = NavHostFragment.findNavController(this);
+        navController.navigate(R.id.action_homeFragment_to_homeDetallesFragment, bundle);
+    }
+
 }

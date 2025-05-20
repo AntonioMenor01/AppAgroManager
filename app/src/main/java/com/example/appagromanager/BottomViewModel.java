@@ -98,7 +98,14 @@ public class BottomViewModel extends ViewModel {
                     }
                 });
     }
+    public LiveData<Integer> getCantidadAnimalesPorGrupo(String grupo) {
+        return agroRepository.getCantidadAnimalesPorGrupo(grupo);
+    }
 
-
-
+    public LiveData<Animal> getAnimalMasViejoPorGrupo(String grupo) {
+        return agroRepository.getAnimalMasViejoPorGrupo(grupo);
+    }
+    public LiveData<Animal> getAnimalMasPesadoPorGrupo(String grupo) {
+        return agroRepository.getAnimalMasPesadoPorGrupo(grupo);
+    }
 }

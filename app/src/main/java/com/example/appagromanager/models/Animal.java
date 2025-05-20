@@ -13,10 +13,11 @@ public class Animal implements Parcelable {
     private String fincaId;
     private String fechaNacimiento;
     private String fechaInsercion;
+    private String piensoid;
 
     public Animal() {}
 
-    public Animal(String id, String crotal, double peso, String grupo, String fincaId, String fechaNacimiento, String fechaInsercion) {
+    public Animal(String id, String crotal, double peso, String grupo, String fincaId, String fechaNacimiento, String fechaInsercion,String piensoid) {
         this.id = id;
         this.crotal = crotal;
         this.peso = peso;
@@ -24,6 +25,7 @@ public class Animal implements Parcelable {
         this.fincaId = fincaId;
         this.fechaNacimiento = fechaNacimiento;
         this.fechaInsercion = fechaInsercion;
+        this.piensoid = piensoid;
     }
 
     public String getId() { return id; }
@@ -47,6 +49,9 @@ public class Animal implements Parcelable {
     public String getFechaInsercion() { return fechaInsercion; }
     public void setFechaInsercion(String fechaInsercion) { this.fechaInsercion = fechaInsercion; }
 
+    public String getPiensoId() {return piensoid; }
+    public void setPiensoId(String piensoid) {this.piensoid = piensoid; }
+
     protected Animal(Parcel in) {
         crotal = in.readString();
         fechaNacimiento = in.readString();
@@ -54,6 +59,7 @@ public class Animal implements Parcelable {
         grupo = in.readString();
         fechaInsercion = in.readString();
         fincaId = in.readString();
+        piensoid = in.readString();
     }
 
     public static final Creator<Animal> CREATOR = new Creator<Animal>() {
@@ -76,6 +82,7 @@ public class Animal implements Parcelable {
         dest.writeString(grupo);
         dest.writeString(fechaInsercion);
         dest.writeString(fincaId);
+        dest.writeString(piensoid);
     }
 
     @Override

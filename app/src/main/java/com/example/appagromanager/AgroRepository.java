@@ -12,14 +12,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.List;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
-import java.util.Locale;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -34,6 +30,170 @@ public class AgroRepository {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
 
+
+    public LiveData<Animal> getAnimalMasPesadoPorGrupo(String grupoUsuario) {
+        MutableLiveData<Animal> animalPesadoLiveData = new MutableLiveData<>();
+        String grupoEnum = mapGrupoUsuarioToEnum(grupoUsuario);
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?select=*&grupo=eq." + grupoEnum;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al obtener animales: " + e.getMessage());
+                animalPesadoLiveData.postValue(null);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    List<Animal> animales = new Gson().fromJson(responseBody, new TypeToken<List<Animal>>() {}.getType());
+
+                    if (animales != null && !animales.isEmpty()) {
+                        Animal masPesado = animales.get(0);
+                        for (Animal a : animales) {
+                            if (a.getPeso() != 0 && masPesado.getPeso() != 0 && a.getPeso() > masPesado.getPeso()) {
+                                masPesado = a;
+                            }
+                        }
+                        animalPesadoLiveData.postValue(masPesado);
+                    } else {
+                        animalPesadoLiveData.postValue(null);
+                    }
+                } else {
+                    Log.e("AgroRepository", "Error al obtener animales: " + response.code());
+                    animalPesadoLiveData.postValue(null);
+                }
+            }
+        });
+
+        return animalPesadoLiveData;
+    }
+
+    public LiveData<Animal> getAnimalMasViejoPorGrupo(String grupoUsuario) {
+        MutableLiveData<Animal> animalViejoLiveData = new MutableLiveData<>();
+        String grupoEnum = mapGrupoUsuarioToEnum(grupoUsuario);
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?select=*&grupo=eq." + grupoEnum;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al obtener animales: " + e.getMessage());
+                animalViejoLiveData.postValue(null);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String responseBody = response.body().string();
+                    List<Animal> animales = new Gson().fromJson(responseBody, new TypeToken<List<Animal>>() {}.getType());
+
+                    if (animales != null && !animales.isEmpty()) {
+                        Animal masViejo = animales.get(0);
+                        for (Animal a : animales) {
+                            if (a.getFechaNacimiento() != null && masViejo.getFechaNacimiento() != null &&
+                                    a.getFechaNacimiento().compareTo(masViejo.getFechaNacimiento()) < 0) {
+                                masViejo = a;
+                            }
+                        }
+                        animalViejoLiveData.postValue(masViejo);
+                    } else {
+                        animalViejoLiveData.postValue(null);
+                    }
+                } else {
+                    Log.e("AgroRepository", "Error al obtener animales: " + response.code());
+                    animalViejoLiveData.postValue(null);
+                }
+            }
+        });
+
+        return animalViejoLiveData;
+    }
+
+    public LiveData<Integer> getCantidadAnimalesPorGrupo(String grupo) {
+        MutableLiveData<Integer> cantidadLiveData = new MutableLiveData<>();
+        String grupoEnum = mapGrupoUsuarioToEnum(grupo);
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?grupo=eq." + grupoEnum + "&select=*";
+
+        Log.d("AgroRepository", "URL final para contar: " + url);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .addHeader("Prefer", "count=exact")
+                .addHeader("Range", "0-0")
+                .build();
+
+        Log.d("AgroRepository", "Headers: Prefer=count=exact, Range=0-0, Authorization y apikey incluidos.");
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al contar animales: " + e.getMessage());
+                cantidadLiveData.postValue(null);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                Log.d("AgroRepository", "Respuesta código: " + response.code());
+                if (response.isSuccessful()) {
+                    String contentRange = response.header("Content-Range");
+                    Log.d("AgroRepository", "Content-Range: " + contentRange);
+                    if (contentRange != null && contentRange.contains("/")) {
+                        try {
+                            String totalStr = contentRange.split("/")[1];
+                            int total = Integer.parseInt(totalStr.trim());
+                            cantidadLiveData.postValue(total);
+                        } catch (Exception e) {
+                            Log.e("AgroRepository", "Error parseando conteo: " + e.getMessage());
+                            cantidadLiveData.postValue(null);
+                        }
+                    } else {
+                        Log.w("AgroRepository", "Content-Range ausente o mal formado");
+                        cantidadLiveData.postValue(null);
+                    }
+                } else {
+                    try {
+                        String errorBody = response.body() != null ? response.body().string() : "No body";
+                        Log.e("AgroRepository", "Error respuesta contando: código " + response.code() + " / cuerpo: " + errorBody);
+                    } catch (Exception ex) {
+                        Log.e("AgroRepository", "Error leyendo cuerpo de respuesta: " + ex.getMessage());
+                    }
+                    cantidadLiveData.postValue(null);
+                }
+            }
+        });
+
+        return cantidadLiveData;
+    }
+
+    private String mapGrupoUsuarioToEnum(String grupoUsuario) {
+        switch (grupoUsuario.toLowerCase()) {
+            case "vacas":
+                return "Vacuno";
+            case "cerdos":
+                return "Porcino";
+            case "ovejas":
+                return "Ovino";
+            default:
+                return grupoUsuario;
+        }
+    }
 
     public LiveData<Usuario> obtenerDatosUsuario() {
         MutableLiveData<Usuario> usuarioLiveData = new MutableLiveData<>();

@@ -292,6 +292,14 @@ public class AnimalesFragment extends Fragment {
                             String fechaInsercion = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
                             nuevoAnimal.setFechaInsercion(fechaInsercion);
 
+                            String piensoid = obtenerPiensoIdPorGrupo(grupo);
+                            if (piensoid == null) {
+                                Toast.makeText(getContext(), "No hay pienso asignado para este grupo", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            nuevoAnimal.setPiensoId(piensoid);
+
                             bottomViewModel.crearAnimal(nuevoAnimal);
 
                             dialogNuevoAnimal.dismiss();
@@ -321,6 +329,21 @@ public class AnimalesFragment extends Fragment {
         });
     }
 
+    private String obtenerPiensoIdPorGrupo(String grupo) {
+        switch (grupo.toUpperCase(Locale.ROOT)) {
+            case "VACA":
+            case "VACUNO":
+                return "039e50ec-eabc-4b9f-8977-b89ad74fb4fb";
+            case "CERDO":
+            case "PORCINO":
+                return "37084c15-4c99-4279-a5be-3c5fb8afe675";
+            case "OVEJA":
+            case "OVINO":
+                return "bc097912-1c87-4365-aac0-aa59d19e4149";
+            default:
+                return null;
+        }
+    }
 
     @Override
     public void onResume() {
