@@ -4,11 +4,14 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import com.example.appagromanager.models.Animal;
+import com.example.appagromanager.models.ConfiguracionConsumo;
 import com.example.appagromanager.models.Finca;
+import com.example.appagromanager.models.Pienso;
 
 import java.util.List;
 
@@ -20,7 +23,12 @@ public class BottomViewModel extends ViewModel {
     private final MutableLiveData<Boolean> eliminado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> actualizado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> crotalEnUSo = new MutableLiveData<>();
-    private final MutableLiveData<Double> consumoPorAnimal = new MutableLiveData<>();
+    private final MutableLiveData<ConfiguracionConsumo> configuracionConsumo = new MutableLiveData<>();
+    private final MutableLiveData<List<Pienso>> piensos = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> consumoRegistrado = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> cantidadPiensoActualizada = new MutableLiveData<>();
+    private MediatorLiveData<ConfiguracionConsumo> mediatorConfiguracionConsumo = new MediatorLiveData<>();
+    private LiveData<ConfiguracionConsumo> currentSource;
 
     public LiveData<List<Animal>> getAnimales() {
         return animales;
@@ -74,10 +82,6 @@ public class BottomViewModel extends ViewModel {
         });
     }
 
-
-    public LiveData<Boolean> getCrotalEnUSo() {
-        return crotalEnUSo;
-    }
     public LiveData<Boolean> verificarCrotal(String crotal) {
         return agroRepository.isCrotalEnUso(crotal);
     }
@@ -107,5 +111,54 @@ public class BottomViewModel extends ViewModel {
     }
     public LiveData<Animal> getAnimalMasPesadoPorGrupo(String grupo) {
         return agroRepository.getAnimalMasPesadoPorGrupo(grupo);
+    }
+
+    public LiveData<List<Pienso>> getPiensosLiveData() {
+        return piensos;
+    }
+
+    public LiveData<Boolean> getConsumoRegistrado() {
+        return consumoRegistrado;
+    }
+
+    public LiveData<Boolean> getCantidadPiensoActualizada() {
+        return cantidadPiensoActualizada;
+    }
+
+    public BottomViewModel() {
+        agroRepository.getConfiguracionConsumoLiveData().observeForever(config -> {
+            configuracionConsumo.postValue(config);
+            Log.d("BottomViewModel", "Configuración obtenida: " + config);
+        });
+    }
+
+    public LiveData<ConfiguracionConsumo> getConfiguracionConsumo() {
+        return configuracionConsumo;
+    }
+
+    public void cargarConfiguracionConsumoPorGrupo(String grupo) {
+        if (grupo == null || grupo.equals("Selecciona un grupo ...")) {
+            configuracionConsumo.postValue(null);
+            return;
+        }
+        agroRepository.cargarConfiguracionConsumoPorGrupo(grupo);
+    }
+
+    public void cargarPiensos() {
+        agroRepository.getPiensos().observeForever(listaPiensos -> {
+            piensos.postValue(listaPiensos);
+        });
+    }
+
+    public void registrarConsumo(String grupo, double cantidadConsumidaKg, String piensoId) {
+        agroRepository.registrarConsumo(grupo, cantidadConsumidaKg, piensoId).observeForever(success -> {
+            consumoRegistrado.postValue(success);
+        });
+    }
+
+    public void actualizarCantidadPienso(String piensoId, double nuevaCantidadKg) {
+        agroRepository.actualizarCantidadPienso(piensoId, nuevaCantidadKg).observeForever(success -> {
+            cantidadPiensoActualizada.postValue(success);
+        });
     }
 }

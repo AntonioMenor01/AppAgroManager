@@ -78,4 +78,9 @@ public class Pienso implements Parcelable {
         dest.writeFloat(cantidadActualKg);
         dest.writeString(fincaId);
     }
+
+    @Override
+    public String toString() {
+        return "Pienso: Nombre=" + nombre + '\'' +" Tipo=" + tipo + "}";
+    }
 }

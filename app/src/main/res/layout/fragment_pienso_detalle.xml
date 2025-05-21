@@ -3,50 +3,69 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
-
+    android:padding="24dp"
+    android:gravity="center_horizontal"
+    android:background="?android:windowBackground">
 
     <ImageView
         android:id="@+id/imagenAnimal"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
         android:src="@drawable/alimentar"
-        android:layout_gravity="center"
-        android:contentDescription="Imagen del animal" />
-
+        android:contentDescription="Imagen del animal"
+        android:layout_marginBottom="24dp" />
 
     <Spinner
         android:id="@+id/spinnerGrupo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:backgroundTint="?attr/colorPrimary"
+        android:layout_marginBottom="16dp" />
 
     <TextView
-        android:id="@+id/textCantidad"
-        android:layout_width="wrap_content"
+        android:id="@+id/textViewPienso"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:gravity="center_vertical"
+        android:textSize="16sp"
+        android:background="@drawable/bg_textview_clickable"
+        android:textColor="?android:textColorPrimary"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/textViewCantidad"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cantidad a consumir: 0 kg"
-        android:layout_marginTop="16dp"/>
+        android:text="Cantidad: --"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/textViewConsumoPorAnimal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Consumo por animal: --"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/textViewConsumoTotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Consumo total del grupo: --"
+        android:textSize="16sp"
+        android:layout_marginBottom="24dp" />
 
     <Button
         android:id="@+id/buttonAlimentar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Alimentar"
-        android:layout_marginTop="24dp" />
-
-    <TextView
-        android:id="@+id/textViewConsumoPorAnimal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Consumo por animal: --"
-        android:layout_marginTop="16dp" />
-
-    <TextView
-        android:id="@+id/textViewConsumoTotal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Consumo total del grupo: --"
+        android:textAllCaps="false"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="@android:color/white"
         android:layout_marginTop="8dp" />
 
 </LinearLayout>

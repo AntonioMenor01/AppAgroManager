@@ -6,16 +6,21 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.appagromanager.models.Animal;
+import com.example.appagromanager.models.ConfiguracionConsumo;
 import com.example.appagromanager.models.Finca;
+import com.example.appagromanager.models.Pienso;
 import com.example.appagromanager.models.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.util.Map;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -29,7 +34,152 @@ public class AgroRepository {
     private final static String APIKEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZldnFmcWZhZWtmcHZjb21ubmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MDk1MDQsImV4cCI6MjA1Nzk4NTUwNH0.T33ffe9y6UYnljC_xMlwBnHchYsjcUgtDRaDz53C6h4";
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
+    private MutableLiveData<ConfiguracionConsumo> configuracionConsumoLiveData = new MutableLiveData<>();
 
+    public LiveData<ConfiguracionConsumo> getConfiguracionConsumoLiveData() {
+        return configuracionConsumoLiveData;
+    }
+
+    public void cargarConfiguracionConsumoPorGrupo(String grupo) {
+        String grupoEnum = mapGrupoUsuarioToEnum(grupo);
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/ConfiguracionConsumo?grupoAnimal=eq." + grupoEnum;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error config consumo: " + e.getMessage());
+                configuracionConsumoLiveData.postValue(null);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String body = response.body().string();
+                    Log.d("AgroRepository", "JSON ConfiguracionConsumo: " + body);
+                    List<ConfiguracionConsumo> list = new Gson().fromJson(body, new TypeToken<List<ConfiguracionConsumo>>(){}.getType());
+                    if (list != null && !list.isEmpty()) {
+                        configuracionConsumoLiveData.postValue(list.get(0));
+                    } else {
+                        configuracionConsumoLiveData.postValue(null);
+                    }
+                } else {
+                    configuracionConsumoLiveData.postValue(null);
+                }
+            }
+        });
+    }
+
+    public LiveData<List<Pienso>> getPiensos() {
+        MutableLiveData<List<Pienso>> liveData = new MutableLiveData<>();
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Pienso?select=*";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al obtener piensos: " + e.getMessage());
+                liveData.postValue(null);
+            }
+
+            @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String body = response.body().string();
+                    List<Pienso> list = new Gson().fromJson(body, new TypeToken<List<Pienso>>(){}.getType());
+                    liveData.postValue(list);
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+        });
+
+        return liveData;
+    }
+
+    // Insertar registro de consumo
+    public LiveData<Boolean> registrarConsumo(String grupo, double cantidadConsumidaKg, String piensoId) {
+        MutableLiveData<Boolean> liveData = new MutableLiveData<>();
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/RegistroConsumoPienso";
+
+        Map<String, Object> registro = new HashMap<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registro.put("fecha", LocalDate.now().toString()); // YYYY-MM-DD
+        }
+        registro.put("grupo", mapGrupoUsuarioToEnum(grupo));
+        registro.put("cantidadConsumidaKg", cantidadConsumidaKg);
+        registro.put("piensoId", piensoId);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(registro);
+
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error insertando consumo: " + e.getMessage());
+                liveData.postValue(false);
+            }
+
+            @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                liveData.postValue(response.isSuccessful());
+            }
+        });
+
+        return liveData;
+    }
+
+    // Actualizar cantidad actual de pienso tras consumo
+    public LiveData<Boolean> actualizarCantidadPienso(String piensoId, double nuevaCantidadKg) {
+        MutableLiveData<Boolean> liveData = new MutableLiveData<>();
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Pienso?id=eq." + piensoId;
+
+        Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("cantidadActualKg", nuevaCantidadKg);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(updateMap);
+
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(body)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error actualizando pienso: " + e.getMessage());
+                liveData.postValue(false);
+            }
+
+            @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                liveData.postValue(response.isSuccessful());
+            }
+        });
+
+        return liveData;
+    }
 
     public LiveData<Animal> getAnimalMasPesadoPorGrupo(String grupoUsuario) {
         MutableLiveData<Animal> animalPesadoLiveData = new MutableLiveData<>();
