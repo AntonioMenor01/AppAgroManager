@@ -35,11 +35,9 @@ public class AgroRepository {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
     private MutableLiveData<ConfiguracionConsumo> configuracionConsumoLiveData = new MutableLiveData<>();
-
     public LiveData<ConfiguracionConsumo> getConfiguracionConsumoLiveData() {
         return configuracionConsumoLiveData;
     }
-
     public void cargarConfiguracionConsumoPorGrupo(String grupo) {
         String grupoEnum = mapGrupoUsuarioToEnum(grupo);
         String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/ConfiguracionConsumo?grupoAnimal=eq." + grupoEnum;
@@ -106,7 +104,7 @@ public class AgroRepository {
         return liveData;
     }
 
-    // Insertar registro de consumo
+
     public LiveData<Boolean> registrarConsumo(String grupo, double cantidadConsumidaKg, String piensoId) {
         MutableLiveData<Boolean> liveData = new MutableLiveData<>();
 
@@ -114,7 +112,7 @@ public class AgroRepository {
 
         Map<String, Object> registro = new HashMap<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registro.put("fecha", LocalDate.now().toString()); // YYYY-MM-DD
+            registro.put("fecha", LocalDate.now().toString());
         }
         registro.put("grupo", mapGrupoUsuarioToEnum(grupo));
         registro.put("cantidadConsumidaKg", cantidadConsumidaKg);
@@ -146,7 +144,7 @@ public class AgroRepository {
         return liveData;
     }
 
-    // Actualizar cantidad actual de pienso tras consumo
+
     public LiveData<Boolean> actualizarCantidadPienso(String piensoId, double nuevaCantidadKg) {
         MutableLiveData<Boolean> liveData = new MutableLiveData<>();
 
@@ -559,7 +557,7 @@ public class AgroRepository {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
-                    enUsoLiveData.postValue(!responseBody.equals("[]")); // Si no está vacío, está en uso
+                    enUsoLiveData.postValue(!responseBody.equals("[]"));
                 } else {
                     enUsoLiveData.postValue(false);
                 }
@@ -632,7 +630,7 @@ public class AgroRepository {
             grupoFiltro = grupoFiltro.substring(0, 1).toUpperCase() + grupoFiltro.substring(1).toLowerCase();
             url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?select=*&grupo=eq." + grupoFiltro;
         } else {
-            url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?select=*"; // Sin filtro
+            url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?select=*";
             Log.w("AgroRepository", "grupoFiltro vacío o nulo. Se consultan todos los animales.");
         }
 

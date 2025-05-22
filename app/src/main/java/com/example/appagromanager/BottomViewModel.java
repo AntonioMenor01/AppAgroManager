@@ -2,9 +2,7 @@ package com.example.appagromanager;
 
 import android.os.Build;
 import android.util.Log;
-
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
@@ -27,8 +25,6 @@ public class BottomViewModel extends ViewModel {
     private final MutableLiveData<List<Pienso>> piensos = new MutableLiveData<>();
     private final MutableLiveData<Boolean> consumoRegistrado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> cantidadPiensoActualizada = new MutableLiveData<>();
-    private MediatorLiveData<ConfiguracionConsumo> mediatorConfiguracionConsumo = new MediatorLiveData<>();
-    private LiveData<ConfiguracionConsumo> currentSource;
 
     public LiveData<List<Animal>> getAnimales() {
         return animales;
@@ -120,7 +116,6 @@ public class BottomViewModel extends ViewModel {
     public LiveData<Boolean> getConsumoRegistrado() {
         return consumoRegistrado;
     }
-
     public LiveData<Boolean> getCantidadPiensoActualizada() {
         return cantidadPiensoActualizada;
     }
@@ -155,10 +150,14 @@ public class BottomViewModel extends ViewModel {
             consumoRegistrado.postValue(success);
         });
     }
-
     public void actualizarCantidadPienso(String piensoId, double nuevaCantidadKg) {
         agroRepository.actualizarCantidadPienso(piensoId, nuevaCantidadKg).observeForever(success -> {
             cantidadPiensoActualizada.postValue(success);
+            if (success) {
+                cargarPiensos();
+            }
         });
     }
+
+
 }

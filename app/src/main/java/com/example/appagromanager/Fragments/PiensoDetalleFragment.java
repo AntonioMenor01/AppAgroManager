@@ -1,5 +1,6 @@
 package com.example.appagromanager.Fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import com.example.appagromanager.databinding.FragmentPiensoDetalleBinding;
 import com.example.appagromanager.models.Animal;
 import com.example.appagromanager.models.Pienso;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +68,7 @@ public class PiensoDetalleFragment extends Fragment {
                     binding.textViewCantidad.setText("Cantidad de " + grupoTexto + ": " + cantidadAnimales);
                     actualizarConsumoTotal();
                 });
+                verificarEstadoBotonAlimentar(grupoSeleccionado);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -87,11 +90,8 @@ public class PiensoDetalleFragment extends Fragment {
         bottomViewModel.getPiensosLiveData().observe(getViewLifecycleOwner(), piensos -> {
             if (piensos != null && !piensos.isEmpty()) {
                 listaPiensos = piensos;
-
                 Pienso piensoSeleccionado = piensos.get(0);
-
                 binding.textViewPienso.setText(piensoSeleccionado.getNombre());
-
                 sugerirPiensoMasFrecuente();
             }
         });
@@ -102,6 +102,11 @@ public class PiensoDetalleFragment extends Fragment {
 
         binding.buttonAlimentar.setOnClickListener(v -> {
             String grupo = grupoSeleccionado;
+            if (yaSeAlimentoHoy(grupo)) {
+                Toast.makeText(requireContext(), "Este grupo ya fue alimentado hoy.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             double cantidadTotal = consumoPorAnimal * cantidadAnimales;
 
             if (cantidadTotal <= 0) {
@@ -135,6 +140,7 @@ public class PiensoDetalleFragment extends Fragment {
                 if (success != null && success) {
                     double nuevaCantidad = finalPiensoSeleccionadoObj.getCantidadActualKg() - cantidadTotal;
                     bottomViewModel.actualizarCantidadPienso(finalPiensoSeleccionadoObj.getId(), nuevaCantidad);
+                    guardarFechaAlimentacion(grupo);
                     Toast.makeText(requireContext(), "Consumo registrado correctamente", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(requireContext(), "Error al registrar consumo", Toast.LENGTH_SHORT).show();
@@ -144,6 +150,7 @@ public class PiensoDetalleFragment extends Fragment {
 
         return binding.getRoot();
     }
+
     private void actualizarConsumoTotal() {
         if (cantidadAnimales > 0 && consumoPorAnimal > 0) {
             double total = cantidadAnimales * consumoPorAnimal;
@@ -185,4 +192,42 @@ public class PiensoDetalleFragment extends Fragment {
             }
         }
     }
+
+    private String getFechaHoy() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return LocalDate.now().toString();
+        } else {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+            return sdf.format(java.util.Calendar.getInstance().getTime());
+        }
+    }
+
+
+    private boolean yaSeAlimentoHoy(String grupo) {
+        String fechaHoy = getFechaHoy();
+        String key = "ultima_alimentacion_" + grupo;
+        return requireContext()
+                .getSharedPreferences("alimentacion_prefs", 0)
+                .getString(key, "")
+                .equals(fechaHoy);
+    }
+
+    private void guardarFechaAlimentacion(String grupo) {
+        String fechaHoy = getFechaHoy();
+        String key = "ultima_alimentacion_" + grupo;
+        requireContext()
+                .getSharedPreferences("alimentacion_prefs", 0)
+                .edit()
+                .putString(key, fechaHoy)
+                .apply();
+
+        verificarEstadoBotonAlimentar(grupo);
+    }
+
+    private void verificarEstadoBotonAlimentar(String grupo) {
+        boolean yaAlimentado = yaSeAlimentoHoy(grupo);
+        binding.buttonAlimentar.setEnabled(!yaAlimentado);
+        binding.buttonAlimentar.setAlpha(yaAlimentado ? 0.5f : 1.0f);
+    }
+
 }

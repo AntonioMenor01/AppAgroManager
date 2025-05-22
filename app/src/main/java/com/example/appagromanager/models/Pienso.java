@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Pienso implements Parcelable {
 
     private String id;
@@ -12,14 +14,17 @@ public class Pienso implements Parcelable {
     private String tipo;
     private float cantidadActualKg;
     private String fincaId;
+    @SerializedName("stockminimokg")
+    private float stockMinimoKg;
 
     public Pienso() {}
-    public Pienso(String id, String nombre, String tipo, int cantidadActualKg, String fincaId) {
+    public Pienso(String id, String nombre, String tipo, int cantidadActualKg, String fincaId,float stockMinimoKg) {
         this.id = id;
         this.nombre = nombre;
         this.tipo = tipo;
         this.cantidadActualKg = cantidadActualKg;
         this.fincaId = fincaId;
+        this.stockMinimoKg = stockMinimoKg;
     }
 
     public String getId() {
@@ -52,6 +57,12 @@ public class Pienso implements Parcelable {
     public void setFincaId(String fincaId) {
         this.fincaId = fincaId;
     }
+    public float getStockMinimoKg() {
+        return stockMinimoKg;
+    }
+    public void setStockMinimoKg(float stockMinimoKg) {
+        this.stockMinimoKg = stockMinimoKg;
+    }
 
     protected Pienso(Parcel in) {
         id = in.readString();
@@ -59,6 +70,7 @@ public class Pienso implements Parcelable {
         tipo = in.readString();
         cantidadActualKg = in.readFloat();
         fincaId = in.readString();
+        stockMinimoKg = in.readFloat();
     }
     public static final Creator<Pienso> CREATOR = new Creator<Pienso>() {
         @Override
@@ -77,6 +89,7 @@ public class Pienso implements Parcelable {
         dest.writeString(tipo);
         dest.writeFloat(cantidadActualKg);
         dest.writeString(fincaId);
+        dest.writeFloat(stockMinimoKg);
     }
 
     @Override
