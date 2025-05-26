@@ -3,7 +3,6 @@ package com.example.appagromanager.activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,7 +13,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.appagromanager.DrawerViewModel;
+import com.example.appagromanager.viewmodel.DrawerViewModel;
 import com.example.appagromanager.R;
 import com.example.appagromanager.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;

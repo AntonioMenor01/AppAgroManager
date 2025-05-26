@@ -3,18 +3,13 @@ package com.example.appagromanager.Fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.appagromanager.PiensoPagerAdapter;
-import com.example.appagromanager.R;
-import com.example.appagromanager.databinding.FragmentHomeDetallesBinding;
+import com.example.appagromanager.adapter.PiensoPagerAdapter;
 import com.example.appagromanager.databinding.FragmentPiensoBinding;
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 

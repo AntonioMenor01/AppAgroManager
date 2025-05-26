@@ -1,4 +1,4 @@
-package com.example.appagromanager;
+package com.example.appagromanager.viewmodel;
 
 import android.os.Build;
 import android.util.Log;
@@ -10,6 +10,7 @@ import com.example.appagromanager.models.Animal;
 import com.example.appagromanager.models.ConfiguracionConsumo;
 import com.example.appagromanager.models.Finca;
 import com.example.appagromanager.models.Pienso;
+import com.example.appagromanager.repository.AgroRepository;
 
 import java.util.List;
 

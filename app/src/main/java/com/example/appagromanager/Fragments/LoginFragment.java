@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
-import com.example.appagromanager.AuthViewModel;
+import com.example.appagromanager.viewmodel.AuthViewModel;
 import com.example.appagromanager.activity.MainActivity;
 import com.example.appagromanager.R;
 import com.example.appagromanager.databinding.FragmentLoginBinding;

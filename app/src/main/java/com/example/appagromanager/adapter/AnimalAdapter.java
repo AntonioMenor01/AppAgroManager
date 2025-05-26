@@ -1,4 +1,4 @@
-package com.example.appagromanager;
+package com.example.appagromanager.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.appagromanager.R;
 import com.example.appagromanager.models.Animal;
 
 import java.text.ParseException;

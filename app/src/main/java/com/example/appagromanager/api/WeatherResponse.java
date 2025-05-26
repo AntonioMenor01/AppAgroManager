@@ -1,4 +1,4 @@
-package com.example.appagromanager.models;
+package com.example.appagromanager.api;
 
 import java.util.List;
 

@@ -1,6 +1,4 @@
-package com.example.appagromanager;
-
-import com.example.appagromanager.models.WeatherResponse;
+package com.example.appagromanager.api;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

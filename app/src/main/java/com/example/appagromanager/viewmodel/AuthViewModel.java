@@ -1,9 +1,10 @@
-package com.example.appagromanager;
+package com.example.appagromanager.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.example.appagromanager.models.Usuario;
+import com.example.appagromanager.repository.AgroRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

@@ -15,9 +15,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.appagromanager.R;
-import com.example.appagromanager.RetrofitClient;
-import com.example.appagromanager.models.WeatherResponse;
-import com.example.appagromanager.WeatherService;
+import com.example.appagromanager.api.RetrofitClient;
+import com.example.appagromanager.api.WeatherResponse;
+import com.example.appagromanager.api.WeatherService;
 import com.example.appagromanager.databinding.FragmentHomeBinding;
 
 import retrofit2.Call;

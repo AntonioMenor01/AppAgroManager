@@ -25,8 +25,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.appagromanager.BottomViewModel;
-import com.example.appagromanager.AnimalAdapter;
+import com.example.appagromanager.viewmodel.BottomViewModel;
+import com.example.appagromanager.adapter.AnimalAdapter;
 import com.example.appagromanager.R;
 import com.example.appagromanager.databinding.FragmentAnimalesBinding;
 import com.example.appagromanager.models.Animal;

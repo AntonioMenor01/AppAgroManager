@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.appagromanager.BottomViewModel;
+import com.example.appagromanager.viewmodel.BottomViewModel;
 import com.example.appagromanager.R;
 import com.example.appagromanager.databinding.FragmentPiensoDetalleBinding;
 import com.example.appagromanager.models.Animal;

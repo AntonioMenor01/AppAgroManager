@@ -1,4 +1,4 @@
-package com.example.appagromanager;
+package com.example.appagromanager.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

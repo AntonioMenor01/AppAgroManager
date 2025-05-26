@@ -10,9 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.appagromanager.BottomViewModel;
-import com.example.appagromanager.R;
-import com.example.appagromanager.databinding.FragmentHomeBinding;
+import com.example.appagromanager.viewmodel.BottomViewModel;
 import com.example.appagromanager.databinding.FragmentHomeDetallesBinding;
 
 import java.text.SimpleDateFormat;

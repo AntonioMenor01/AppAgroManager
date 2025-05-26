@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.appagromanager.BottomViewModel;
+import com.example.appagromanager.viewmodel.BottomViewModel;
 import com.example.appagromanager.databinding.FragmentPiensoEstadisticaBinding;
 import com.example.appagromanager.models.Pienso;
 
