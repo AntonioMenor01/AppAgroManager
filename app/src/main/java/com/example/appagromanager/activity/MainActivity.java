@@ -26,7 +26,6 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

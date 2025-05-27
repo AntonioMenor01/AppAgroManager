@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.appagromanager.models.Animal;
 import com.example.appagromanager.models.ConfiguracionConsumo;
 import com.example.appagromanager.models.Finca;
+import com.example.appagromanager.models.Insumo;
 import com.example.appagromanager.models.Pienso;
 import com.example.appagromanager.repository.AgroRepository;
 
@@ -31,6 +32,9 @@ public class BottomViewModel extends ViewModel {
     private final MutableLiveData<Boolean> cantidadPiensoActualizada = new MutableLiveData<>();
     private final MutableLiveData<List<Finca>> fincasConAnimales = new MutableLiveData<>();
     private final MutableLiveData<Boolean> eliminarResult = new MutableLiveData<>();
+    private final MutableLiveData<List<Insumo>> insumos = new MutableLiveData<>();
+    private MutableLiveData<List<Animal>> animal = new MutableLiveData<>();
+
 
     public LiveData<List<Animal>> getAnimales() {
         return animales;
@@ -236,6 +240,29 @@ public class BottomViewModel extends ViewModel {
 
     public LiveData<Boolean> eliminarFinca(String fincaId) {
         return agroRepository.eliminarFinca(fincaId);
+    }
+
+    public LiveData<List<Insumo>> getInsumos() {
+        return insumos;
+    }
+
+    public void cargarInsumos() {
+        agroRepository.getInsumos().observeForever(lista -> {
+            insumos.postValue(lista);
+        });
+    }
+
+    public void registrarUsoInsumo(String insumoId, String animalId, String fecha, String fincaId, double cantidadUsada) {
+        agroRepository.insertarUsoInsumo(insumoId, animalId, fecha, fincaId, cantidadUsada);
+    }
+    public LiveData<List<Animal>> getAnimal() {
+        return animal;
+    }
+
+    public void cargarAnimales() {
+        agroRepository.getAnimales().observeForever(animalesList -> {
+            animales.postValue(animalesList);
+        });
     }
 
 }

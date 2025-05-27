@@ -89,5 +89,11 @@ public class Animal implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return this.getCrotal();
+    }
+
 }
 

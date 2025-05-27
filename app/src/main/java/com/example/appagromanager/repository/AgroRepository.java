@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.appagromanager.models.Animal;
 import com.example.appagromanager.models.ConfiguracionConsumo;
 import com.example.appagromanager.models.Finca;
+import com.example.appagromanager.models.Insumo;
 import com.example.appagromanager.models.Pienso;
 import com.example.appagromanager.models.Usuario;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -36,6 +38,109 @@ public class AgroRepository {
     private final static String APIKEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZldnFmcWZhZWtmcHZjb21ubmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MDk1MDQsImV4cCI6MjA1Nzk4NTUwNH0.T33ffe9y6UYnljC_xMlwBnHchYsjcUgtDRaDz53C6h4";
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
+
+    public LiveData<List<Animal>> getAnimales() {
+        MutableLiveData<List<Animal>> liveData = new MutableLiveData<>();
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?select=*";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al obtener animales: " + e.getMessage());
+                liveData.postValue(null);
+            }
+
+            @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String body = response.body().string();
+                    List<Animal> list = new Gson().fromJson(body, new TypeToken<List<Animal>>(){}.getType());
+                    liveData.postValue(list);
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+        });
+
+        return liveData;
+    }
+
+
+    public void insertarUsoInsumo(String insumoId, String animalId, String fecha, String fincaId, double cantidadUsada) {
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/RegistroUsoInsumo";
+
+        JsonObject json = new JsonObject();
+        json.addProperty("insumoId", insumoId);
+        json.addProperty("animalid", animalId);
+        json.addProperty("fecha", fecha);
+        json.addProperty("fincaId", fincaId);
+        json.addProperty("cantidadUsada", cantidadUsada);
+
+        RequestBody body = RequestBody.create(json.toString(), MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al registrar uso de insumo: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Log.d("AgroRepository", "Uso de insumo registrado con éxito");
+                } else {
+                    Log.e("AgroRepository", "Fallo al registrar uso de insumo. Código: " + response.code());
+                    Log.e("AgroRepository", "Respuesta: " + (response.body() != null ? response.body().string() : "sin cuerpo"));
+                }
+            }
+        });
+    }
+
+
+    public LiveData<List<Insumo>> getInsumos() {
+        MutableLiveData<List<Insumo>> liveData = new MutableLiveData<>();
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Insumo?select=*";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al obtener insumos: " + e.getMessage());
+                liveData.postValue(null);
+            }
+
+            @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String body = response.body().string();
+                    List<Insumo> list = new Gson().fromJson(body, new TypeToken<List<Insumo>>() {}.getType());
+                    liveData.postValue(list);
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+        });
+
+        return liveData;
+    }
 
     public LiveData<Boolean> eliminarFinca(String fincaId) {
         MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
