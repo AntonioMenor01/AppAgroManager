@@ -33,6 +33,8 @@ import com.example.appagromanager.models.Animal;
 import com.example.appagromanager.models.Finca;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -228,6 +230,8 @@ public class AnimalesFragment extends Fragment {
                     );
                     fincaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     fincaSpinner.setAdapter(fincaAdapter);
+                    Collections.sort(fincas, Comparator.comparing(Finca::getNombre));
+
                 } else {
                     Log.e("AnimalesFragment", "Lista de fincas vacía o nula");
                     Toast.makeText(getContext(), "No se encontraron fincas disponibles", Toast.LENGTH_SHORT).show();

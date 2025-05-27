@@ -58,10 +58,11 @@ public class FincaAdapter extends RecyclerView.Adapter<FincaAdapter.FincaViewHol
         }
 
         public void bind(final Finca finca) {
+
             tvNombre.setText(finca.getNombre());
             tvUbicacion.setText(finca.getUbicacion());
-//            tvCapacidad.setText("Capacidad: " + finca.getCapacidad());
-//            tvAnimales.setText("Animales: " + finca.getAnimalesActuales()); 
+              tvCapacidad.setText("Capacidad: " + finca.getCapacidad());
+              tvAnimales.setText("Animales: " + finca.getAnimalesActuales());
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
@@ -69,5 +70,9 @@ public class FincaAdapter extends RecyclerView.Adapter<FincaAdapter.FincaViewHol
                 }
             });
         }
+    }
+    public void updateList(List<Finca> newFincas) {
+        this.fincaList = newFincas;
+        notifyDataSetChanged();
     }
 }

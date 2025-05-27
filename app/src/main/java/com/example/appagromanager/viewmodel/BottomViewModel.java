@@ -12,7 +12,11 @@ import com.example.appagromanager.models.Finca;
 import com.example.appagromanager.models.Pienso;
 import com.example.appagromanager.repository.AgroRepository;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BottomViewModel extends ViewModel {
 
@@ -21,11 +25,12 @@ public class BottomViewModel extends ViewModel {
     private final MutableLiveData<List<Finca>> fincas = new MutableLiveData<>();
     private final MutableLiveData<Boolean> eliminado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> actualizado = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> crotalEnUSo = new MutableLiveData<>();
     private final MutableLiveData<ConfiguracionConsumo> configuracionConsumo = new MutableLiveData<>();
     private final MutableLiveData<List<Pienso>> piensos = new MutableLiveData<>();
     private final MutableLiveData<Boolean> consumoRegistrado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> cantidadPiensoActualizada = new MutableLiveData<>();
+    private final MutableLiveData<List<Finca>> fincasConAnimales = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> eliminarResult = new MutableLiveData<>();
 
     public LiveData<List<Animal>> getAnimales() {
         return animales;
@@ -159,6 +164,78 @@ public class BottomViewModel extends ViewModel {
             }
         });
     }
+    public LiveData<List<Finca>> getFincasConAnimales() {
+        return fincasConAnimales;
+    }
 
+    public void obtenerFincasConAnimales() {
+        agroRepository.getFinca().observeForever(fincaList -> {
+            if (fincaList != null) {
+                agroRepository.getAnimales(null).observeForever(animalesList -> {
+                    if (animalesList != null) {
+                        Map<String, Integer> contador = new HashMap<>();
+                        for (Animal animal : animalesList) {
+                            String fincaId = animal.getFincaId();
+                            contador.put(fincaId, contador.getOrDefault(fincaId, 0) + 1);
+                        }
+
+                        for (Finca finca : fincaList) {
+                            finca.setAnimalesActuales(contador.getOrDefault(finca.getId(), 0));
+                        }
+
+                        Collections.sort(fincaList, Comparator.comparing(Finca::getId));
+                        fincasConAnimales.postValue(fincaList);
+
+                    } else {
+                        for (Finca finca : fincaList) {
+                            finca.setAnimalesActuales(0);
+                        }
+                        Collections.sort(fincaList, Comparator.comparing(Finca::getId));
+                        fincasConAnimales.postValue(fincaList);
+                    }
+                });
+            }
+        });
+    }
+
+    public LiveData<Finca> getFincaById(String id) {
+        MutableLiveData<Finca> fincaLiveData = new MutableLiveData<>();
+
+        List<Finca> currentFincas = fincasConAnimales.getValue();
+        if (currentFincas != null) {
+            for (Finca f : currentFincas) {
+                if (f.getId().equals(id)) {
+                    fincaLiveData.postValue(f);
+                    return fincaLiveData;
+                }
+            }
+            fincaLiveData.postValue(null);
+        } else {
+            obtenerFincasConAnimales();
+            getFincasConAnimales().observeForever(fincas -> {
+                if (fincas != null) {
+                    for (Finca f : fincas) {
+                        if (f.getId().equals(id)) {
+                            fincaLiveData.postValue(f);
+                            break;
+                        }
+                    }
+                }
+            });
+        }
+        return fincaLiveData;
+    }
+
+    public LiveData<Boolean> insertarFinca(Finca nuevaFinca) {
+        return agroRepository.insertarFinca(nuevaFinca);
+    }
+
+    public LiveData<Boolean> getEliminarResult() {
+        return eliminarResult;
+    }
+
+    public LiveData<Boolean> eliminarFinca(String fincaId) {
+        return agroRepository.eliminarFinca(fincaId);
+    }
 
 }

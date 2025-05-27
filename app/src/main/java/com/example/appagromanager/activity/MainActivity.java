@@ -1,5 +1,7 @@
 package com.example.appagromanager.activity;
 
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         binding.bottomNav.setItemIconTintList(null);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
@@ -51,22 +53,42 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
         NavigationUI.setupWithNavController(binding.toolbar, navController, appBarConfiguration);
-
+        NavigationUI.setupWithNavController(binding.bottomNav, navController);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        NavigationUI.setupWithNavController(binding.bottomNav, navController);
         binding.bottomNav.setLabelVisibilityMode(
                 com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_UNLABELED
         );
-        loadProfileImageIntoDrawer();
-        DrawerViewModel drawerViewModel = new ViewModelProvider(this).get(DrawerViewModel.class);
 
+        binding.navView.getMenu().findItem(R.id.cerrarSesion).setOnMenuItemClickListener(item -> {
+            mostrarDialogoCerrarSesion();
+            return true;
+        });
+
+        loadProfileImageIntoDrawer();
+
+        DrawerViewModel drawerViewModel = new ViewModelProvider(this).get(DrawerViewModel.class);
         drawerViewModel.getUsuario().observe(this, usuario -> {
             if (usuario != null) {
                 TextView textView = binding.navView.getHeaderView(0).findViewById(R.id.text);
                 textView.setText(usuario.getNombre() + " " + usuario.getApellidos());
             }
         });
+    }
+
+    private void mostrarDialogoCerrarSesion() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Cerrar sesión")
+                .setMessage("¿Seguro que quieres cerrar sesión?")
+                .setPositiveButton("Sí", (dialog, which) -> {
+                    FirebaseAuth.getInstance().signOut();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     private void loadProfileImageIntoDrawer() {
@@ -80,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 
     @Override
     protected void onResume() {

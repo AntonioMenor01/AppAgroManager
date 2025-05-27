@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -34,6 +36,87 @@ public class AgroRepository {
     private final static String APIKEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZldnFmcWZhZWtmcHZjb21ubmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MDk1MDQsImV4cCI6MjA1Nzk4NTUwNH0.T33ffe9y6UYnljC_xMlwBnHchYsjcUgtDRaDz53C6h4";
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
+
+    public LiveData<Boolean> eliminarFinca(String fincaId) {
+        MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
+
+        Request request = new Request.Builder()
+                .url("https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Finca?id=eq." + fincaId)
+                .delete()
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al eliminar la finca: " + e.getMessage());
+                resultLiveData.postValue(false);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                if (response.isSuccessful()) {
+                    Log.d("AgroRepository", "Finca eliminada correctamente");
+                    resultLiveData.postValue(true);
+                } else {
+                    try {
+                        Log.e("AgroRepository", "Error al eliminar la finca: " + response.code() + " - " + response.body().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    resultLiveData.postValue(false);
+                }
+            }
+        });
+
+        return resultLiveData;
+    }
+
+    public LiveData<Boolean> insertarFinca(Finca nuevaFinca) {
+        MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
+
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        String json = gson.toJson(nuevaFinca);
+
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url("https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Finca")
+                .post(body)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al crear la finca: " + e.getMessage());
+                resultLiveData.postValue(false);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                if (response.isSuccessful()) {
+                    Log.d("AgroRepository", "Finca creada correctamente");
+                    resultLiveData.postValue(true);
+                } else {
+                    try {
+                        Log.e("AgroRepository", "Error al crear la finca: " + response.code() + " - " + response.body().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    resultLiveData.postValue(false);
+                }
+            }
+        });
+
+        return resultLiveData;
+    }
+
     private MutableLiveData<ConfiguracionConsumo> configuracionConsumoLiveData = new MutableLiveData<>();
     public LiveData<ConfiguracionConsumo> getConfiguracionConsumoLiveData() {
         return configuracionConsumoLiveData;

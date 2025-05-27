@@ -102,17 +102,14 @@
         <action
             android:id="@+id/action_fincasFragment_to_insumosFragment"
             app:destination="@id/insumosFragment" />
+        <action
+            android:id="@+id/action_fincasFragment_to_detalleFincaFragment"
+            app:destination="@id/detalleFincaFragment" />
+        <action
+            android:id="@+id/action_fincasFragment_to_crearFincaFragment"
+            app:destination="@id/crearFincaFragment" />
     </fragment>
 
-        <fragment
-            android:id="@+id/cerrarSesion"
-            android:name="com.example.appagromanager.Fragments.CerrarSesion"
-            android:label="Cerrar sesión"
-            tools:layout="@layout/fragment_cerrar_sesion" >
-            <action
-                android:id="@+id/action_cerrarSesion_to_cambiarPasswd"
-                app:destination="@id/cambiarPasswd" />
-        </fragment>
         <fragment
             android:id="@+id/cambiarPasswd"
             android:name="com.example.appagromanager.Fragments.CambiarPasswd"
@@ -166,6 +163,42 @@
         <action
             android:id="@+id/action_homeDetallesFragment_to_piensoFragment"
             app:destination="@id/piensoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detalleFincaFragment"
+        android:name="com.example.appagromanager.Fragments.DetalleFincaFragment"
+        android:label="Detalles Finca"
+        tools:layout="@layout/fragment_detalle_finca" >
+        <action
+            android:id="@+id/action_detalleFincaFragment_to_fincasFragment"
+            app:destination="@id/fincasFragment" />
+        <action
+            android:id="@+id/action_detalleFincaFragment_to_piensoFragment"
+            app:destination="@id/piensoFragment" />
+        <action
+            android:id="@+id/action_detalleFincaFragment_to_animalesFragment"
+            app:destination="@id/animalesFragment" />
+        <action
+            android:id="@+id/action_detalleFincaFragment_to_detalleAnimalFragment"
+            app:destination="@id/detalleAnimalFragment" />
+        <action
+            android:id="@+id/action_detalleFincaFragment_to_homeDetallesFragment"
+            app:destination="@id/homeDetallesFragment" />
+        <action
+            android:id="@+id/action_detalleFincaFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_detalleFincaFragment_to_insumosFragment"
+            app:destination="@id/insumosFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/crearFincaFragment"
+        android:name="com.example.appagromanager.Fragments.CrearFincaFragment"
+        android:label="Añadir nueva finca"
+        tools:layout="@layout/fragment_crear_finca" >
+        <action
+            android:id="@+id/action_crearFincaFragment_to_fincasFragment"
+            app:destination="@id/fincasFragment" />
     </fragment>
 
 
