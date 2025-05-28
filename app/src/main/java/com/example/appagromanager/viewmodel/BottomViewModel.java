@@ -265,4 +265,8 @@ public class BottomViewModel extends ViewModel {
         });
     }
 
+    public void actualizarCantidadInsumo(String insumoId, double nuevaCantidad) {
+        agroRepository.actualizarCantidadInsumo(insumoId, nuevaCantidad);
+    }
+
 }

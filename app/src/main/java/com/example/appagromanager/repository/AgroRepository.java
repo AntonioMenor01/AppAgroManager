@@ -39,6 +39,39 @@ public class AgroRepository {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
 
+    public void actualizarCantidadInsumo(String insumoId, double nuevaCantidad) {
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Insumo?id=eq." + insumoId;
+
+        JsonObject json = new JsonObject();
+        json.addProperty("cantidad", nuevaCantidad);
+
+        RequestBody body = RequestBody.create(json.toString(), MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(body)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error actualizando cantidad de insumo: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Log.d("AgroRepository", "Cantidad de insumo actualizada correctamente");
+                } else {
+                    Log.e("AgroRepository", "Error en respuesta al actualizar cantidad. Código: " + response.code());
+                }
+            }
+        });
+    }
+
     public LiveData<List<Animal>> getAnimales() {
         MutableLiveData<List<Animal>> liveData = new MutableLiveData<>();
 

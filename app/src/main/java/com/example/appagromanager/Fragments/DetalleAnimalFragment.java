@@ -152,19 +152,24 @@ public class DetalleAnimalFragment extends Fragment {
     }
 
     private void mostrarDialogoTexto(String titulo, TextView textView) {
-        final EditText input = new EditText(requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_editar_animal, null);
+        TextView dialogTitulo = dialogView.findViewById(R.id.dialogTitulo);
+        EditText input = dialogView.findViewById(R.id.dialogInput);
+
+        dialogTitulo.setText(titulo);
+
         String textoActual = textView.getText().toString();
         if (titulo.equals("Editar Peso")) {
             textoActual = textoActual.replace(" kg", "").trim();
             input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        } else if (titulo.equals("Editar Crotal")) {
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
         }
         input.setText(textoActual);
-        input.setPadding(40, 30, 40, 30);
-        input.setTextSize(18);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle(titulo);
-        builder.setView(input);
+        builder.setView(dialogView);
 
         builder.setPositiveButton("Guardar", (dialog, which) -> {
             String nuevoTexto = input.getText().toString().trim();
@@ -176,6 +181,7 @@ public class DetalleAnimalFragment extends Fragment {
         });
 
         builder.setNegativeButton("Cancelar", null);
+
         builder.show();
     }
 

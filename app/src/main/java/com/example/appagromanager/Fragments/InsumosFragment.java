@@ -27,6 +27,7 @@ import com.example.appagromanager.databinding.FragmentInsumosBinding;
 import com.example.appagromanager.models.Animal;
 import com.example.appagromanager.models.Insumo;
 import com.example.appagromanager.viewmodel.BottomViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,7 +49,6 @@ public class InsumosFragment extends Fragment {
 
         setupRecyclerView();
         setupSearch();
-        setupFab();
 
         bottomViewModel.getInsumos().observe(getViewLifecycleOwner(), lista -> {
             if (lista != null) {
@@ -89,13 +89,29 @@ public class InsumosFragment extends Fragment {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void afterTextChanged(Editable s) {}
         });
+
+        binding.addInsumoFab.setOnClickListener(v -> {
+            if (insumoList.isEmpty()) {
+                Toast.makeText(getContext(), "No hay insumos para reponer", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String[] insumosNombres = new String[insumoList.size()];
+            for (int i = 0; i < insumoList.size(); i++) {
+                insumosNombres[i] = insumoList.get(i).getNombre();
+            }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Selecciona un insumo a reponer")
+                    .setItems(insumosNombres, (dialog, which) -> {
+                        Insumo insumoSeleccionado = insumoList.get(which);
+                        mostrarDialogoReponerInsumo(insumoSeleccionado);
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .show();
+        });
+
     }
 
-    private void setupFab() {
-        binding.addInsumoFab.setOnClickListener(v -> {
-            // Añadir nuevo insumo (Lo tengo que hacer :) )
-        });
-    }
 
     private void mostrarDialogoRegistroUso(Insumo insumo) {
         Log.d("InsumosFragment", "Mostrar diálogo registro uso para insumo: " + insumo.getNombre());
@@ -117,16 +133,15 @@ public class InsumosFragment extends Fragment {
 
         final Calendar calendar = Calendar.getInstance();
         fechaEditText.setOnClickListener(v -> {
-            Log.d("InsumosFragment", "Fecha editText clickeado para mostrar DatePicker");
             DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
                     (view, year, month, dayOfMonth) -> {
                         String fecha = year + "-" + String.format("%02d", (month + 1)) + "-" + String.format("%02d", dayOfMonth);
-                        Log.d("InsumosFragment", "Fecha seleccionada: " + fecha);
                         fechaEditText.setText(fecha);
                     },
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             datePickerDialog.show();
         });
 
@@ -158,28 +173,118 @@ public class InsumosFragment extends Fragment {
         guardarBtn.setOnClickListener(v -> {
             String cantidadStr = cantidadEditText.getText().toString();
             String fecha = fechaEditText.getText().toString();
-            Log.d("InsumosFragment", "Guardar clickeado - cantidad: " + cantidadStr + ", fecha: " + fecha);
 
             if (cantidadStr.isEmpty() || fecha.isEmpty() || animalSpinner.getSelectedItem() == null) {
-                Log.d("InsumosFragment", "Campos incompletos o sin selección en Spinner");
-                Toast.makeText(getContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
+                Snackbar snackbar = Snackbar.make(dialogView,
+                        "Por favor completa todos los campos",
+                        Snackbar.LENGTH_LONG);
+                snackbar.setBackgroundTint(getResources().getColor(R.color.verde));
+                snackbar.setTextColor(getResources().getColor(android.R.color.white));
+                snackbar.show();
                 return;
             }
 
             double cantidadUsada = Double.parseDouble(cantidadStr);
-            Animal animalSeleccionado = (Animal) animalSpinner.getSelectedItem();
-            Log.d("InsumosFragment", "Animal seleccionado: " + animalSeleccionado.getId());
 
+            if (cantidadUsada > insumo.getCantidad()) {
+                Snackbar snackbar = Snackbar.make(dialogView,
+                        "No puedes usar más de lo disponible: " + insumo.getCantidad(),
+                        Snackbar.LENGTH_LONG);
+                snackbar.setBackgroundTint(getResources().getColor(R.color.verde));
+                snackbar.setTextColor(getResources().getColor(android.R.color.white));
+                snackbar.show();
+                return;
+            }
+
+            Animal animalSeleccionado = (Animal) animalSpinner.getSelectedItem();
             String animalId = animalSeleccionado.getId();
             String fincaId = animalSeleccionado.getFincaId();
 
             bottomViewModel.registrarUsoInsumo(insumo.getId(), animalId, fecha, fincaId, cantidadUsada);
 
-            Log.d("InsumosFragment", "Uso de insumo registrado");
+            double nuevaCantidad = insumo.getCantidad() - cantidadUsada;
+            if (nuevaCantidad < 0) nuevaCantidad = 0;
+
+            bottomViewModel.actualizarCantidadInsumo(insumo.getId(), nuevaCantidad);
+
+            insumo.setCantidad(nuevaCantidad);
+            insumosAdapter.notifyDataSetChanged();
+
+            Snackbar snackbar = Snackbar.make(binding.getRoot(),
+                    "Uso de insumo registrado correctamente",
+                    Snackbar.LENGTH_LONG);
+            View snackbarView = snackbar.getView();
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) snackbarView.getLayoutParams();
+            params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, 775);
+            snackbarView.setLayoutParams(params);
+
+            snackbar.setBackgroundTint(getResources().getColor(R.color.verde));
+            snackbar.setTextColor(getResources().getColor(android.R.color.white));
+            snackbar.show();
+
             dialog.dismiss();
         });
 
         dialog.show();
-        Log.d("InsumosFragment", "Diálogo mostrado");
+    }
+
+    private void mostrarDialogoReponerInsumo(Insumo insumo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_reponer_insumo, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+
+        TextView insumoNombreTextView = dialogView.findViewById(R.id.insumoNombreTextView);
+        EditText cantidadReponerEditText = dialogView.findViewById(R.id.cantidadReponerEditText);
+        Button cancelarBtn = dialogView.findViewById(R.id.cancelarBtn);
+        Button guardarBtn = dialogView.findViewById(R.id.guardarBtn);
+
+        insumoNombreTextView.setText("Insumo: " + insumo.getNombre());
+
+        cancelarBtn.setOnClickListener(v -> dialog.dismiss());
+
+        guardarBtn.setOnClickListener(v -> {
+            String cantidadStr = cantidadReponerEditText.getText().toString();
+
+            if (cantidadStr.isEmpty()) {
+                Snackbar snackbar = Snackbar.make(dialogView,
+                        "Por favor ingresa la cantidad a reponer",
+                        Snackbar.LENGTH_LONG);
+                snackbar.setBackgroundTint(getResources().getColor(R.color.verde));
+                snackbar.setTextColor(getResources().getColor(android.R.color.white));
+                snackbar.show();
+                return;
+            }
+
+            double cantidadAReponer = Double.parseDouble(cantidadStr);
+            if (cantidadAReponer <= 0) {
+                Snackbar snackbar = Snackbar.make(dialogView,
+                        "La cantidad debe ser mayor que cero",
+                        Snackbar.LENGTH_LONG);
+                snackbar.setBackgroundTint(getResources().getColor(R.color.verde));
+                snackbar.setTextColor(getResources().getColor(android.R.color.white));
+                snackbar.show();
+                return;
+            }
+
+            double nuevaCantidad = insumo.getCantidad() + cantidadAReponer;
+
+            bottomViewModel.actualizarCantidadInsumo(insumo.getId(), nuevaCantidad);
+
+            insumo.setCantidad(nuevaCantidad);
+            insumosAdapter.notifyDataSetChanged();
+
+            Snackbar snackbar = Snackbar.make(binding.getRoot(),
+                    "Insumo repuesto correctamente",
+                    Snackbar.LENGTH_LONG);
+            snackbar.setBackgroundTint(getResources().getColor(R.color.verde));
+            snackbar.setTextColor(getResources().getColor(android.R.color.white));
+            snackbar.show();
+
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 }
