@@ -1,36 +1,87 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:padding="16dp">
+    android:padding="24dp"
+    android:background="#FAFAFA">
 
     <TextView
         android:id="@+id/tvAnimalName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Nombre del Grupo"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
+        android:textSize="28sp"
+        android:layout_marginTop="105dp"
+        android:textStyle="bold"
+        android:textColor="#468f67"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <View
+        android:layout_width="60dp"
+        android:layout_height="3dp"
+        android:background="#468f67"
+        app:layout_constraintTop_toBottomOf="@id/tvAnimalName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp"/>
+
     <TextView
         android:id="@+id/textViewCantidad"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Cantidad del Grupo"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
+        android:text="Cantidad: 0"
+        android:textColor="#455A64"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="45dp"
+        app:layout_constraintTop_toBottomOf="@id/tvAnimalName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#C8E6C9"
+        app:layout_constraintTop_toBottomOf="@id/textViewCantidad"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
     <TextView
         android:id="@+id/textViewViejo"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="El Viejo"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
+        android:text="El Viejo: -"
+        android:textSize="20sp"
+        android:textColor="#455A64"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/textViewCantidad"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#C8E6C9"
+        app:layout_constraintTop_toBottomOf="@id/textViewViejo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/textViewPesado"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="El Pesado"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
-</LinearLayout>
+        android:text="El Pesado: -"
+        android:textSize="20sp"
+        android:textColor="#455A64"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/textViewViejo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -25,6 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
+                android:drawableEnd="@drawable/crotal"
                 android:maxLines="1"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -42,6 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal"
+                android:drawableEnd="@drawable/kilogramo"
                 android:maxLines="1"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,8 +64,7 @@
                 android:clickable="true"
                 android:maxLines="1"
                 android:drawableEnd="@drawable/calendar32"
-                android:drawablePadding="8dp"
-            />
+                android:drawablePadding="8dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -89,6 +90,7 @@
                 android:spinnerMode="dropdown"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
+                android:popupBackground="@drawable/dropdown_background"
                 android:background="?attr/selectableItemBackground"/>
         </androidx.cardview.widget.CardView>
 
@@ -113,6 +115,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:spinnerMode="dropdown"
+                android:popupBackground="@drawable/dropdown_background"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:background="?attr/selectableItemBackground"/>

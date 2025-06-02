@@ -14,5 +14,4 @@
             android:id="@+id/cerrarSesion"
             android:title="Cerrar sesión" />
     </group>
-
 </menu>

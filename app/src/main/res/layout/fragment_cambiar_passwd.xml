@@ -3,19 +3,48 @@
     android:orientation="vertical"
     android:padding="24dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:background="#F5F5F5">
+
+    <ImageView
+        android:layout_marginTop="80dp"
+        android:id="@+id/imagenAnimal"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:src="@drawable/pregunta"
+        android:contentDescription="Imagen del animal"
+        android:layout_marginBottom="24dp"
+        android:scaleType="centerInside"
+        android:background="@drawable/circle_border_green"
+        android:padding="24dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Introduce tu correo electrónico si quieres recibir un enlace para crear una nueva contraseña."
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:layout_marginBottom="16dp"
+        android:lineSpacingExtra="4dp"
+        android:gravity="center"/>
 
     <EditText
         android:id="@+id/editEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Correo electrónico"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:padding="12dp"
+        android:background="@drawable/rounded_edittext"
+        android:layout_marginBottom="16dp"/>
 
     <Button
         android:id="@+id/btnSendResetEmail"
         android:text="Enviar correo de restablecimiento"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        android:layout_width="match_parent"
+        android:backgroundTint="#468f67"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

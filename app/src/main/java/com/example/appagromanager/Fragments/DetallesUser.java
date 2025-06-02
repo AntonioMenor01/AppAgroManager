@@ -12,16 +12,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.example.appagromanager.viewmodel.DrawerViewModel;
 import com.example.appagromanager.databinding.FragmentDetallesUserBinding;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class DetallesUser extends Fragment {
 
@@ -29,6 +33,14 @@ public class DetallesUser extends Fragment {
     private DrawerViewModel viewModel;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private static final String IMAGE_FILENAME = "selected_image.png";
+
+    private Context context;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,7 +64,6 @@ public class DetallesUser extends Fragment {
             binding.icon.setImageBitmap(savedImage);
         }
 
-
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -60,42 +71,67 @@ public class DetallesUser extends Fragment {
                         Uri selectedImageUri = result.getData().getData();
                         if (selectedImageUri != null) {
                             try {
-                                Bitmap selectedImageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), selectedImageUri);
+                                // Usar getScaledBitmap para cargar la imagen con tamaño adecuado
+                                int targetWidth = binding.icon.getWidth() > 0 ? binding.icon.getWidth() : 120; // fallback a 120dp si width no está definido aún
+                                int targetHeight = binding.icon.getHeight() > 0 ? binding.icon.getHeight() : 120; // fallback a 120dp
+                                Bitmap selectedImageBitmap = getScaledBitmap(selectedImageUri, targetWidth, targetHeight);
                                 binding.icon.setImageBitmap(selectedImageBitmap);
                                 saveImageToStorage(selectedImageBitmap);
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                Toast.makeText(getContext(), "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
                 }
         );
 
-
-        binding.icon.setOnClickListener(v -> {
+        binding.iconEdit.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("image/*");
             imagePickerLauncher.launch(intent);
         });
 
-
         return binding.getRoot();
     }
+
+    private Bitmap getScaledBitmap(Uri imageUri, int targetWidth, int targetHeight) throws IOException {
+        // 1. Obtener opciones solo para obtener dimensiones
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        try (InputStream input = context.getContentResolver().openInputStream(imageUri)) {
+            BitmapFactory.decodeStream(input, null, options);
+        }
+
+        // 2. Calcular factor de escala (mínimo 1 para evitar errores)
+        int photoWidth = options.outWidth;
+        int photoHeight = options.outHeight;
+        int scaleFactor = Math.max(1, Math.min(photoWidth / targetWidth, photoHeight / targetHeight));
+
+        // 3. Decodificar imagen con escala
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = scaleFactor;
+        options.inPurgeable = true;
+
+        try (InputStream input = context.getContentResolver().openInputStream(imageUri)) {
+            return BitmapFactory.decodeStream(input, null, options);
+        }
+    }
+
     private void saveImageToStorage(Bitmap bitmap) {
         try {
-            FileOutputStream fos = getActivity().openFileOutput(IMAGE_FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(IMAGE_FILENAME, Context.MODE_PRIVATE);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(getContext(), "Error al guardar la imagen", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Error al guardar la imagen", Toast.LENGTH_SHORT).show();
         }
     }
 
     private Bitmap loadImageFromStorage() {
         try {
-            FileInputStream fis = getActivity().openFileInput(IMAGE_FILENAME);
+            FileInputStream fis = context.openFileInput(IMAGE_FILENAME);
             return BitmapFactory.decodeStream(fis);
         } catch (IOException e) {
             e.printStackTrace();

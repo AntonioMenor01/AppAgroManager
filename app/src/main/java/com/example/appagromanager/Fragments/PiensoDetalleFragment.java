@@ -229,5 +229,4 @@ public class PiensoDetalleFragment extends Fragment {
         binding.buttonAlimentar.setEnabled(!yaAlimentado);
         binding.buttonAlimentar.setAlpha(yaAlimentado ? 0.5f : 1.0f);
     }
-
 }

@@ -39,6 +39,39 @@ public class AgroRepository {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final OkHttpClient client = new OkHttpClient();
 
+    public LiveData<List<Animal>> getAnimalesPorFinca(String fincaId) {
+        MutableLiveData<List<Animal>> liveData = new MutableLiveData<>();
+
+        String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Animal?fincaId=eq." + fincaId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", APIKEY)
+                .addHeader("Authorization", "Bearer " + APIKEY)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("AgroRepository", "Error al obtener animales por finca: " + e.getMessage());
+                liveData.postValue(null);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() && response.body() != null) {
+                    String body = response.body().string();
+                    List<Animal> list = new Gson().fromJson(body, new TypeToken<List<Animal>>(){}.getType());
+                    liveData.postValue(list);
+                } else {
+                    liveData.postValue(null);
+                }
+            }
+        });
+
+        return liveData;
+    }
+
     public void actualizarCantidadInsumo(String insumoId, double nuevaCantidad) {
         String url = "https://fevqfqfaekfpvcomnnhq.supabase.co/rest/v1/Insumo?id=eq." + insumoId;
 

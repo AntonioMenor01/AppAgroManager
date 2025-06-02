@@ -47,6 +47,7 @@
         <Button
             android:id="@+id/cancelarBtn"
             android:layout_width="wrap_content"
+            android:backgroundTint="@color/rojo"
             android:layout_height="wrap_content"
             android:text="Cancelar" />
 

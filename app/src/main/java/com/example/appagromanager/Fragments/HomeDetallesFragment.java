@@ -59,9 +59,9 @@ public class HomeDetallesFragment extends Fragment {
                     SimpleDateFormat formatoSalida = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                     String fechaFormateada = formatoSalida.format(fechaDate);
 
-                    binding.textViewViejo.setText("Más viejo: " + fechaFormateada + " (" + animal.getCrotal() + ")");
+                    binding.textViewViejo.setText("Más anciano: " + fechaFormateada + " (" + animal.getCrotal() + ")");
                 } catch (Exception e) {
-                    binding.textViewViejo.setText("Más viejo: fecha inválida (" + animal.getCrotal() + ")");
+                    binding.textViewViejo.setText("Más anciano: fecha inválida (" + animal.getCrotal() + ")");
                     e.printStackTrace();
                 }
             } else {
@@ -71,9 +71,9 @@ public class HomeDetallesFragment extends Fragment {
 
         bottomViewModel.getAnimalMasPesadoPorGrupo(animalName).observe(getViewLifecycleOwner(), animal -> {
             if (animal != null) {
-                binding.textViewPesado.setText("Más pesado: " + animal.getPeso() + "kg (" + animal.getCrotal() + ")");
+                binding.textViewPesado.setText("Mayor peso: " + animal.getPeso() + "kg (" + animal.getCrotal() + ")");
             } else {
-                binding.textViewPesado.setText("No se encontró animal más pesado.");
+                binding.textViewPesado.setText("No se encontró animal de mayor peso.");
             }
         });
 

@@ -1,5 +1,6 @@
 package com.example.appagromanager.Fragments;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -55,6 +56,7 @@ public class AnimalesFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -67,6 +69,25 @@ public class AnimalesFragment extends Fragment {
         adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.grupoSpinner.setAdapter(adapterSpinner);
         Log.d("AnimalesFragment", "Spinner de grupos configurado");
+
+        binding.grupoSpinner.setText(adapterSpinner.getItem(0), false);
+
+        binding.grupoSpinner.setOnTouchListener((v, event) -> {
+            if (!binding.grupoSpinner.isPopupShowing()) {
+                String textoActual = binding.grupoSpinner.getText().toString();
+                binding.grupoSpinner.setText("", false);
+                binding.grupoSpinner.showDropDown();
+                binding.grupoSpinner.post(() -> binding.grupoSpinner.setText(textoActual, false));
+            }
+            return false;
+        });
+
+        binding.grupoSpinner.setOnItemClickListener((parent, view1, position, id) -> {
+            String grupoSeleccionado = (String) parent.getItemAtPosition(position);
+            Log.d("AnimalesFragment", "Grupo seleccionado: " + grupoSeleccionado);
+            bottomViewModel.obtenerAnimalesPorGrupo(grupoSeleccionado);
+        });
+
 
         bottomViewModel = new ViewModelProvider(this).get(BottomViewModel.class);
 
@@ -96,51 +117,26 @@ public class AnimalesFragment extends Fragment {
             }
         });
 
-        binding.grupoSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view1, int position, long id) {
-                String grupoSeleccionado = (String) parent.getItemAtPosition(position);
-                Log.d("AnimalesFragment", "Grupo seleccionado: " + grupoSeleccionado);
-                bottomViewModel.obtenerAnimalesPorGrupo(grupoSeleccionado);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
         binding.busquedaEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 adapter.filtrarPorCrotal(s.toString());
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         });
 
         TextWatcher filtrosWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 aplicarFiltros();
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         };
-
-
 
         binding.pesoMinEditText.addTextChangedListener(filtrosWatcher);
         binding.pesoMaxEditText.addTextChangedListener(filtrosWatcher);
         binding.edadMinEditText.addTextChangedListener(filtrosWatcher);
         binding.edadMaxEditText.addTextChangedListener(filtrosWatcher);
-
 
         binding.nuevoAnimal.setOnClickListener(v -> {
             mostrarDialogoNuevoAnimal();
@@ -151,7 +147,7 @@ public class AnimalesFragment extends Fragment {
                 Toast.makeText(getContext(), "Animal añadido con éxito", Toast.LENGTH_SHORT).show();
                 bottomViewModel.resetCreado();
 
-                String grupoSeleccionado = (String) binding.grupoSpinner.getSelectedItem();
+                String grupoSeleccionado = binding.grupoSpinner.getText().toString();
                 bottomViewModel.obtenerAnimalesPorGrupo(grupoSeleccionado);
 
                 if (dialogNuevoAnimal != null && dialogNuevoAnimal.isShowing()) {
@@ -166,7 +162,7 @@ public class AnimalesFragment extends Fragment {
         String pesoMaxStr = binding.pesoMaxEditText.getText().toString().trim();
         String edadMinStr = binding.edadMinEditText.getText().toString().trim();
         String edadMaxStr = binding.edadMaxEditText.getText().toString().trim();
-        String grupoSeleccionado = (String) binding.grupoSpinner.getSelectedItem();
+        String grupoSeleccionado = binding.grupoSpinner.getText().toString();
         String crotal = binding.busquedaEditText.getText().toString().trim();
 
         Double pesoMin = pesoMinStr.isEmpty() ? null : Double.parseDouble(pesoMinStr);
@@ -231,7 +227,6 @@ public class AnimalesFragment extends Fragment {
                     fincaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     fincaSpinner.setAdapter(fincaAdapter);
                     Collections.sort(fincas, Comparator.comparing(Finca::getNombre));
-
                 } else {
                     Log.e("AnimalesFragment", "Lista de fincas vacía o nula");
                     Toast.makeText(getContext(), "No se encontraron fincas disponibles", Toast.LENGTH_SHORT).show();
@@ -252,32 +247,42 @@ public class AnimalesFragment extends Fragment {
         dialogNuevoAnimal.show();
 
         dialogNuevoAnimal.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String crotal = crotalEditText.getText().toString().trim();
+            String pesoStr = pesoEditText.getText().toString().trim();
+            String fechaNacimiento = fechaNacimientoEditText.getText().toString().trim();
+            String grupo = (grupoSpinner.getSelectedItem() != null) ? grupoSpinner.getSelectedItem().toString() : "";
+            Finca fincaSeleccionada = (Finca) fincaSpinner.getSelectedItem();
+
+            if (crotal.isEmpty() || pesoStr.isEmpty() || fechaNacimiento.isEmpty() || grupo.isEmpty() || fincaSeleccionada == null) {
+                Toast.makeText(getContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (grupo.equals("Selecciona un grupo ...")) {
+                Toast.makeText(getContext(), "Por favor selecciona un grupo válido", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double peso;
             try {
-                String crotal = crotalEditText.getText().toString().trim();
-                String pesoStr = pesoEditText.getText().toString().trim();
-                String fechaNacimiento = fechaNacimientoEditText.getText().toString().trim();
-                String grupo = (grupoSpinner.getSelectedItem() != null) ? grupoSpinner.getSelectedItem().toString() : "";
-                Finca fincaSeleccionada = (Finca) fincaSpinner.getSelectedItem();
+                peso = Double.parseDouble(pesoStr);
+                if (peso <= 0) {
+                    Toast.makeText(getContext(), "El peso debe ser mayor que cero", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Peso inválido", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                if (crotal.isEmpty() || pesoStr.isEmpty() || fechaNacimiento.isEmpty() || grupo.isEmpty() || fincaSeleccionada == null) {
-                    Toast.makeText(getContext(), "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
+            bottomViewModel.getAnimalesPorFinca(fincaSeleccionada.getId()).observe(getViewLifecycleOwner(), animales -> {
+                if (animales == null) {
+                    Toast.makeText(getContext(), "Error al obtener animales de la finca", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (grupo.equals("Selecciona un grupo ...")) {
-                    Toast.makeText(getContext(), "Por favor selecciona un grupo válido", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                double peso;
-                try {
-                    peso = Double.parseDouble(pesoStr);
-                    if (peso <= 0) {
-                        Toast.makeText(getContext(), "El peso debe ser mayor que cero", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                } catch (NumberFormatException e) {
-                    Toast.makeText(getContext(), "Peso inválido", Toast.LENGTH_SHORT).show();
+                if (animales.size() >= fincaSeleccionada.getCapacidad()) {
+                    Toast.makeText(getContext(), "La finca ha alcanzado su límite de animales", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -313,16 +318,12 @@ public class AnimalesFragment extends Fragment {
                         }
                     }
                 });
-
-
-            } catch (Exception e) {
-                Log.e("AnimalesFragment", "Error general al guardar: " + e.getMessage());
-                Toast.makeText(getContext(), "Ha ocurrido un error", Toast.LENGTH_SHORT).show();
-            }
+            });
         });
+
+        bottomViewModel.refrescarFincas();
     }
 
-    //Para solo observar una vez el livedata y que no haya peticiones duplicadas
     public static <T> void observarUnaVez(LiveData<T> liveData, LifecycleOwner owner, Observer<T> observer) {
         liveData.observe(owner, new Observer<T>() {
             @Override
@@ -352,8 +353,19 @@ public class AnimalesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        String textoActual = binding.grupoSpinner.getText().toString();
+        binding.grupoSpinner.setText("", false);
+
+        ArrayAdapter<CharSequence> adapterSpinner = (ArrayAdapter<CharSequence>) binding.grupoSpinner.getAdapter();
+        if (adapterSpinner != null) {
+            adapterSpinner.getFilter().filter(null);
+        }
+        binding.grupoSpinner.post(() -> binding.grupoSpinner.setText(textoActual, false));
         bottomViewModel.obtenerAnimalesPorGrupo("");
+        bottomViewModel.obtenerFincas();
     }
+
 
     @Override
     public void onDestroyView() {

@@ -34,6 +34,11 @@ public class BottomViewModel extends ViewModel {
     private final MutableLiveData<Boolean> eliminarResult = new MutableLiveData<>();
     private final MutableLiveData<List<Insumo>> insumos = new MutableLiveData<>();
     private MutableLiveData<List<Animal>> animal = new MutableLiveData<>();
+    private MutableLiveData<List<Animal>> animalesPorFincaLiveData = new MutableLiveData<>();
+
+    public LiveData<List<Animal>> getAnimalesPorFinca(String fincaId) {
+        return agroRepository.getAnimalesPorFinca(fincaId);
+    }
 
 
     public LiveData<List<Animal>> getAnimales() {
@@ -51,6 +56,11 @@ public class BottomViewModel extends ViewModel {
             agroRepository.getFinca().observeForever(fincas::postValue);
         }
     }
+
+    public void refrescarFincas() {
+        agroRepository.getFinca().observeForever(fincas::postValue);
+    }
+
 
     public LiveData<Boolean> getEliminado() {
         return eliminado;
@@ -231,7 +241,19 @@ public class BottomViewModel extends ViewModel {
     }
 
     public LiveData<Boolean> insertarFinca(Finca nuevaFinca) {
-        return agroRepository.insertarFinca(nuevaFinca);
+        MutableLiveData<Boolean> resultado = new MutableLiveData<>();
+
+        agroRepository.insertarFinca(nuevaFinca).observeForever(success -> {
+            resultado.postValue(success);
+
+            if (success) {
+                agroRepository.getFinca().observeForever(nuevasFincas -> {
+                    fincas.postValue(nuevasFincas);
+                });
+            }
+        });
+
+        return resultado;
     }
 
     public LiveData<Boolean> getEliminarResult() {
@@ -239,8 +261,21 @@ public class BottomViewModel extends ViewModel {
     }
 
     public LiveData<Boolean> eliminarFinca(String fincaId) {
-        return agroRepository.eliminarFinca(fincaId);
+        MutableLiveData<Boolean> resultado = new MutableLiveData<>();
+
+        agroRepository.eliminarFinca(fincaId).observeForever(success -> {
+            resultado.postValue(success);
+
+            if (success) {
+                agroRepository.getFinca().observeForever(nuevasFincas -> {
+                    fincas.postValue(nuevasFincas);
+                });
+            }
+        });
+
+        return resultado;
     }
+
 
     public LiveData<List<Insumo>> getInsumos() {
         return insumos;

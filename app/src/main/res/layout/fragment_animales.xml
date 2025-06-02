@@ -2,97 +2,149 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
+    android:background="@color/white"
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:weightSum="2">
+        app:boxBackgroundMode="outline"
+        app:boxStrokeColor="#468f67"
+        app:boxStrokeWidthFocused="2dp"
+        app:boxCornerRadiusTopStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp"
+        app:boxCornerRadiusBottomStart="8dp"
+        app:boxCornerRadiusBottomEnd="8dp"
+        android:layout_marginTop="8dp">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/busquedaEditText"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
             android:hint="Crotal"
             android:drawableStart="@android:drawable/ic_menu_search"
             android:padding="8dp"
-            android:layout_weight="2"
-            android:background="@drawable/rounded_edittext"
+            android:textColorHint="#888888"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:textColorHint="#888888" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="#468f67"
+            app:boxStrokeWidthFocused="2dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/pesoMinEditText"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:inputType="numberDecimal"
+                android:hint="Peso min (kg)"
+                android:textColorHint="#888888"
+                android:padding="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="#468f67"
+            app:boxStrokeWidthFocused="2dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/pesoMaxEditText"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:inputType="numberDecimal"
+                android:hint="Peso max (kg)"
+                android:textColorHint="#888888"
+                android:padding="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:weightSum="2">
+        android:layout_marginTop="12dp">
 
-        <EditText
-            android:id="@+id/pesoMinEditText"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="numberDecimal"
-            android:hint="Peso min (kg)"
-            android:background="@drawable/rounded_edittext"
-            android:padding="8dp"
-            android:layout_height="40dp"
-            android:textColorHint="#888888" />
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="#468f67"
+            app:boxStrokeWidthFocused="2dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp">
 
-        <EditText
-            android:id="@+id/pesoMaxEditText"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edadMinEditText"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:inputType="numberDecimal"
+                android:hint="Edad min"
+                android:textColorHint="#888888"
+                android:padding="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="match_parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="numberDecimal"
-            android:hint="Peso max (kg)"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/rounded_edittext"
-            android:padding="8dp"
-            android:layout_height="40dp"
-            android:textColorHint="#888888" />
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="#468f67"
+            app:boxStrokeWidthFocused="2dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edadMaxEditText"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:inputType="numberDecimal"
+                android:hint="Edad max"
+                android:textColorHint="#888888"
+                android:padding="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:weightSum="2">
-
-        <EditText
-            android:id="@+id/edadMinEditText"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:inputType="numberDecimal"
-            android:hint="Edad min"
-            android:background="@drawable/rounded_edittext"
-            android:padding="8dp"
-            android:layout_height="40dp"
-            android:textColorHint="#888888" />
-
-        <EditText
-            android:id="@+id/edadMaxEditText"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:inputType="numberDecimal"
-            android:hint="Edad max"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/rounded_edittext"
-            android:padding="8dp"
-            android:layout_height="40dp"
-            android:textColorHint="#888888" />
-    </LinearLayout>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/animalesRecyclerView"
-        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:layout_marginTop="12dp"
         android:clipToPadding="false"
         android:paddingBottom="80dp" />
 
@@ -110,24 +162,42 @@
         android:layout_marginTop="12dp"
         android:gravity="center_vertical">
 
-        <Spinner
-            android:id="@+id/grupoSpinner"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/grupoSpinnerLayout"
             android:layout_width="250dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="10dp" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            app:boxStrokeColor="#468f67"
+            app:boxStrokeWidthFocused="2dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/grupoSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:completionThreshold="1"
+                android:inputType="none"
+                android:padding="8dp"
+                android:popupBackground="@drawable/dropdown_background"
+                android:textColor="#000000"
+                android:textColorHint="#888888"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/nuevoAnimal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
-            android:layout_marginLeft="30dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginBottom="15dp"
             android:src="@drawable/ic_add"
             app:tint="@android:color/white"
-            android:backgroundTint="@color/verde"
+            android:backgroundTint="#468f67"
             app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" />
     </LinearLayout>
-
 </LinearLayout>

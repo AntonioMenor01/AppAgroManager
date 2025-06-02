@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -174,9 +175,19 @@ public class DetalleAnimalFragment extends Fragment {
         builder.setPositiveButton("Guardar", (dialog, which) -> {
             String nuevoTexto = input.getText().toString().trim();
             if (titulo.equals("Editar Peso")) {
-                nuevoTexto = nuevoTexto + " kg";
+                nuevoTexto += " kg";
             }
-            textView.setText(nuevoTexto);
+
+            if (titulo.equals("Editar Crotal")) {
+                animal.setCrotal(nuevoTexto);
+            } else if (titulo.equals("Editar Peso")) {
+                try {
+                    animal.setPeso(Double.parseDouble(nuevoTexto.replace(" kg", "").trim()));
+                } catch (NumberFormatException e) {
+                    Toast.makeText(requireContext(), "Peso inválido", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
             actualizarAnimalEnBD();
         });
 
@@ -187,7 +198,9 @@ public class DetalleAnimalFragment extends Fragment {
 
     private void mostrarDialogoFinca() {
         bottomViewModel.obtenerFincas();
-        bottomViewModel.getFincas().observe((LifecycleOwner) requireContext(), fincas -> {
+        bottomViewModel.getFincas().observe(getViewLifecycleOwner(), fincas -> {
+            if (!isAdded()) return;
+
             if (fincas != null) {
                 String[] nombresFincas = new String[fincas.size()];
                 for (int i = 0; i < fincas.size(); i++) {
@@ -197,10 +210,44 @@ public class DetalleAnimalFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 builder.setTitle("Selecciona una finca");
                 builder.setSingleChoiceItems(nombresFincas, -1, (dialog, which) -> {
-                    binding.textFinca.setText(nombresFincas[which]);
+                    String nombreSeleccionado = nombresFincas[which];
+
                     dialog.dismiss();
 
-                    actualizarAnimalEnBD();
+                    String fincaIdSeleccionada = null;
+                    for (Finca f : fincas) {
+                        if (f.getNombre().equals(nombreSeleccionado)) {
+                            fincaIdSeleccionada = f.getId();
+                            break;
+                        }
+                    }
+
+                    if (fincaIdSeleccionada == null) {
+                        Toast.makeText(requireContext(), "Finca no encontrada", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    final String finalFincaId = fincaIdSeleccionada;
+
+                    bottomViewModel.getAnimalesPorFinca(finalFincaId).observe(getViewLifecycleOwner(), animales -> {
+                        if (!isAdded()) return;
+
+                        if (animales == null) {
+                            Toast.makeText(requireContext(), "Error al obtener animales de la finca", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        int capacidad = obtenerCapacidadFinca(finalFincaId);
+                        boolean mismaFinca = finalFincaId.equals(animal.getFincaId());
+
+                        if (!mismaFinca && animales.size() >= capacidad) {
+                            Toast.makeText(requireContext(), "La finca seleccionada ha alcanzado su límite de animales", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        binding.textFinca.setText(nombreSeleccionado);
+                        actualizarAnimalEnBD();
+                    });
                 });
 
                 builder.setNegativeButton("Cancelar", null);
@@ -238,25 +285,50 @@ public class DetalleAnimalFragment extends Fragment {
             return;
         }
 
-        if (!crotal.equals(animal.getCrotal())) {
-            String finalFincaId = fincaId;
-            observarUnaVez(bottomViewModel.verificarCrotal(crotal), getViewLifecycleOwner(), enUso -> {
-                if (Boolean.TRUE.equals(enUso)) {
-                    Toast.makeText(requireContext(), "El crotal ya está en uso", Toast.LENGTH_SHORT).show();
-                    binding.textCrotal.requestFocus();
-                    binding.textCrotal.setText(animal.getCrotal());
-                    InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm != null) {
-                        imm.showSoftInput(binding.textCrotal, InputMethodManager.SHOW_IMPLICIT);
-                    }
-                } else {
-                    ejecutarActualizacion(animal, crotal, pesoDouble, finalFincaId);
-                }
-            });
-        } else {
-            ejecutarActualizacion(animal, crotal, pesoDouble, fincaId);
-        }
+        String finalFincaId = fincaId;
+        bottomViewModel.getAnimalesPorFinca(fincaId).observe(getViewLifecycleOwner(), animales -> {
+            if (animales == null) {
+                Toast.makeText(requireContext(), "Error al obtener animales de la finca", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
+            int animalesEnFinca = animales.size();
+
+            if (!finalFincaId.equals(animal.getFincaId()) && animalesEnFinca >= obtenerCapacidadFinca(finalFincaId)) {
+                Toast.makeText(requireContext(), "La finca seleccionada ha alcanzado su límite de animales", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!crotal.equals(animal.getCrotal())) {
+                observarUnaVez(bottomViewModel.verificarCrotal(crotal), getViewLifecycleOwner(), enUso -> {
+                    if (Boolean.TRUE.equals(enUso)) {
+                        Toast.makeText(requireContext(), "El crotal ya está en uso", Toast.LENGTH_SHORT).show();
+                        binding.textCrotal.requestFocus();
+                        binding.textCrotal.setText(animal.getCrotal());
+                        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (imm != null) {
+                            imm.showSoftInput(binding.textCrotal, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    } else {
+                        ejecutarActualizacion(animal, crotal, pesoDouble, finalFincaId);
+                    }
+                });
+            } else {
+                ejecutarActualizacion(animal, crotal, pesoDouble, finalFincaId);
+            }
+        });
+    }
+
+    private int obtenerCapacidadFinca(String fincaId) {
+        List<Finca> fincas = bottomViewModel.getFincas().getValue();
+        if (fincas != null) {
+            for (Finca f : fincas) {
+                if (f.getId().equals(fincaId)) {
+                    return f.getCapacidad();
+                }
+            }
+        }
+        return Integer.MAX_VALUE;
     }
 
     private void ejecutarActualizacion(Animal animal, String crotal, double peso, String fincaId) {
@@ -280,5 +352,11 @@ public class DetalleAnimalFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        bottomViewModel.getFincas();
     }
 }

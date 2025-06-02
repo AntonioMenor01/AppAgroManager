@@ -1,163 +1,191 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="12dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:padding="16dp"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardMaiz"
+        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:elevation="3dp"
+        app:cardCornerRadius="10dp"
+        android:background="@android:color/white">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardMaiz"
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="12dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="35dp"
-            android:elevation="4dp"
-            android:layout_marginBottom="16dp">
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:orientation="vertical"
-                android:padding="16dp"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvVacuno"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Pienso Vacuno Premium"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#2E7D32" />
 
-                    <TextView
-                        android:id="@+id/tvVacuno"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Pienso Vacuno Premium"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvCantidadVacuno"
-                        android:text=" CANTIDAD EN KG"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <EditText
-                    android:id="@+id/etVacuno"
-                    android:hint="Kilos a añadir"
-                    android:inputType="numberDecimal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <Button
-                    android:id="@+id/btnVacuno"
-                    android:text="Rellenar"
-                    android:layout_gravity="center"
+                <TextView
+                    android:id="@+id/tvCantidadVacuno"
+                    android:text="CANTIDAD EN KG"
+                    android:textSize="13sp"
+                    android:textColor="#757575"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardAvena"
+            <EditText
+                android:id="@+id/etVacuno"
+                android:hint="Kilos a añadir"
+                android:inputType="numberDecimal"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/btnVacuno"
+                android:text="Rellenar"
+                android:backgroundTint="#468f67"
+                android:textColor="#FFFFFF"
+                android:layout_width="120dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:paddingVertical="6dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardAvena"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:elevation="3dp"
+        app:cardCornerRadius="10dp"
+        android:background="@android:color/white">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="12dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="4dp"
-            android:layout_marginBottom="16dp">
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:orientation="vertical"
-                android:padding="16dp"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/tvPorcino"
-                        android:text="Pienso Porcino Balanceado"
-                        android:textSize="17sp"
-                        android:textStyle="bold"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/tvCantidadPorcino"
-                        android:text=" CANTIDAD EN KG"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-                <EditText
-                    android:id="@+id/etPorcino"
-                    android:hint="Kilos a añadir"
-                    android:inputType="numberDecimal"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tvPorcino"
+                    android:text="Pienso Porcino Balanceado"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#2E7D32"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content" />
 
-                <Button
-                    android:id="@+id/btnPorcino"
-                    android:text="Rellenar"
-                    android:layout_gravity="center"
+                <TextView
+                    android:id="@+id/tvCantidadPorcino"
+                    android:text="CANTIDAD EN KG"
+                    android:textSize="13sp"
+                    android:textColor="#757575"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardCebada"
+            <EditText
+                android:id="@+id/etPorcino"
+                android:hint="Kilos a añadir"
+                android:inputType="numberDecimal"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/btnPorcino"
+                android:text="Rellenar"
+                android:backgroundTint="#468f67"
+                android:textColor="#FFFFFF"
+                android:layout_width="120dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:paddingVertical="6dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardCebada"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="3dp"
+        app:cardCornerRadius="10dp"
+        android:background="@android:color/white">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="12dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="4dp">
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:orientation="vertical"
-                android:padding="16dp"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/tvOvino"
-                        android:text="Pienso Ovino Nutritivo"
-                        android:textSize="17sp"
-                        android:textStyle="bold"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/tvCantidadOvino"
-                        android:text=" CANTIDAD EN KG"
-                        android:textSize="16sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <EditText
-                    android:id="@+id/etOvino"
-                    android:hint="Kilos a añadir"
-                    android:inputType="numberDecimal"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tvOvino"
+                    android:text="Pienso Ovino Nutritivo"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#2E7D32"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content" />
 
-                <Button
-                    android:id="@+id/btnOvino"
-                    android:text="Rellenar"
-                    android:layout_gravity="center"
+                <TextView
+                    android:id="@+id/tvCantidadOvino"
+                    android:text="CANTIDAD EN KG"
+                    android:textSize="13sp"
+                    android:textColor="#757575"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
-</ScrollView>
+
+            <EditText
+                android:id="@+id/etOvino"
+                android:hint="Kilos a añadir"
+                android:inputType="numberDecimal"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:padding="8dp" />
+
+            <Button
+                android:id="@+id/btnOvino"
+                android:text="Rellenar"
+                android:backgroundTint="#468f67"
+                android:textColor="#FFFFFF"
+                android:layout_width="120dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:paddingVertical="6dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>
