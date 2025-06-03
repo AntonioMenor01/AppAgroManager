@@ -22,7 +22,6 @@ import java.util.Map;
 public class BottomViewModel extends ViewModel {
 
     private final AgroRepository agroRepository = new AgroRepository();
-    private final MutableLiveData<List<Animal>> animales = new MutableLiveData<>();
     private final MutableLiveData<List<Finca>> fincas = new MutableLiveData<>();
     private final MutableLiveData<Boolean> eliminado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> actualizado = new MutableLiveData<>();
@@ -30,11 +29,11 @@ public class BottomViewModel extends ViewModel {
     private final MutableLiveData<List<Pienso>> piensos = new MutableLiveData<>();
     private final MutableLiveData<Boolean> consumoRegistrado = new MutableLiveData<>();
     private final MutableLiveData<Boolean> cantidadPiensoActualizada = new MutableLiveData<>();
-    private final MutableLiveData<List<Finca>> fincasConAnimales = new MutableLiveData<>();
     private final MutableLiveData<Boolean> eliminarResult = new MutableLiveData<>();
     private final MutableLiveData<List<Insumo>> insumos = new MutableLiveData<>();
+    private final MutableLiveData<List<Finca>> fincasConAnimales = new MutableLiveData<>();
+    private final MutableLiveData<List<Animal>> animales = new MutableLiveData<>();
     private MutableLiveData<List<Animal>> animal = new MutableLiveData<>();
-    private MutableLiveData<List<Animal>> animalesPorFincaLiveData = new MutableLiveData<>();
 
     public LiveData<List<Animal>> getAnimalesPorFinca(String fincaId) {
         return agroRepository.getAnimalesPorFinca(fincaId);

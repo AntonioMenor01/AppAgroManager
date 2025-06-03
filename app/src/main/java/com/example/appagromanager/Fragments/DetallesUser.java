@@ -96,19 +96,18 @@ public class DetallesUser extends Fragment {
     }
 
     private Bitmap getScaledBitmap(Uri imageUri, int targetWidth, int targetHeight) throws IOException {
-        // 1. Obtener opciones solo para obtener dimensiones
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         try (InputStream input = context.getContentResolver().openInputStream(imageUri)) {
             BitmapFactory.decodeStream(input, null, options);
         }
 
-        // 2. Calcular factor de escala (mínimo 1 para evitar errores)
+        // Calcular factor de escala (mínimo 1 para evitar errores)
         int photoWidth = options.outWidth;
         int photoHeight = options.outHeight;
         int scaleFactor = Math.max(1, Math.min(photoWidth / targetWidth, photoHeight / targetHeight));
 
-        // 3. Decodificar imagen con escala
+        // Decodificar imagen con escala
         options.inJustDecodeBounds = false;
         options.inSampleSize = scaleFactor;
         options.inPurgeable = true;

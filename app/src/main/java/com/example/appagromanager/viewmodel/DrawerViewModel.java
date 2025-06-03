@@ -9,7 +9,6 @@ import com.example.appagromanager.repository.AgroRepository;
 
 public class DrawerViewModel extends ViewModel {
     private AgroRepository agroRepository = new AgroRepository();
-    private MutableLiveData<Usuario> usuarioLiveData = new MutableLiveData<>();
 
     public LiveData<Usuario> getUsuario() {
         return agroRepository.obtenerDatosUsuario();
